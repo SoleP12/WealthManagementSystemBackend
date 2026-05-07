@@ -1,3 +1,2 @@
 fastapi[standard-no-fastapi-cloud-cli]
 sqlalchemy
-jinja2
