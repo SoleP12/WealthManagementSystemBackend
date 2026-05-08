@@ -23,26 +23,20 @@ app.mount(
 templates = Jinja2Templates(directory =BASE_DIR /  "templates")
 
 
-@app.get("/")
-async def default_page():
-    return {"message: Working"}
+
+@app.get("/", name = "Login")
+async def default_page(request: Request):
+    return templates.TemplateResponse(request, "login.html")
  
-@app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    return templates.TemplateResponse(
-        "login.html",
-        {"request": request}
-    )
+
 
 @app.get("/home", response_class=HTMLResponse)
-async def home_page(request: Request):
-    return templates.TemplateResponse(
-        "home.html",
-        {"request": request}
-    )
+async def login_page(request: Request):
+    return templates.TemplateResponse(request, "home.html")
+
+
+
+
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_page(request: Request):
-    return templates.TemplateResponse(
-        "dashboard.html",
-        {"request": request}
-    )
+    return templates.TemplateResponse(request, "dashboard.html")
