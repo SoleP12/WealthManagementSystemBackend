@@ -1,21 +1,31 @@
 ##############################################
+# FastApi Creation Imports, Exception Imports
 from fastapi import Request
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from fastapi.exception import HTTPException
+
 ##############################################
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
+
 ##############################################
+# Import To Run Server
 import uvicorn
-##############################################
 
 ##############################################
+# Model Imports
+from models import WealthManager
+
+##############################################
+# Database Imports
+from .database import engine
+
+##############################################
 
 
-
-
-# uv run fastapi dev main.py
+models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
@@ -30,14 +40,18 @@ app.mount(
 templates = Jinja2Templates(directory =BASE_DIR /  "templates")
 
 
-
 @app.get("/", name = "Login")
 async def default_page(request: Request):
     return templates.TemplateResponse(request, "login.html")
- 
 
+@app.post("/create_WealthManager")
+async def create_WealthManager( wealthmanager: WealthManager ):
+    return{
+        "ID" : wealthmanager.fakemanager.name,
+        "Name" : wealthmanager.fakemanager.name,
+        "Password" : wealthmanager.fakemanager.password
+    }
 
-
-@app.get("/dashboard", response_class=HTMLResponse)
+@app.get("/dashboard/", response_class=HTMLResponse)
 async def dashboard_page(request: Request):
     return templates.TemplateResponse(request, "dashboard.html")
