@@ -3,8 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-
-
 # Create a SQLite database URL
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 # For PostgreSQL you'd use: postgresql://user:password@postgresserver/db

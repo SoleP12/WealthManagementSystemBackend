@@ -1,5 +1,11 @@
 # Wealth Management System Backend
-*Demonstrate backend SWE skills utilizing api's and databases for security of mock wealth management system
+*Demonstrate Backend Software Engineering Skills Utilizing API's and Database.
+*Demonstarte 
 
 
-* Download Requirements.txt
+* Change Directory Into the WealthManage Folder --cd WealthManage --
+* Create Virtual Enviroment
+* Activate Virtual Your Enviroment
+* PIP intstall the requiremnets.txt with -- "pip install -r requirements.txt" -- 
+* Change the Directory to the backend folder
+* Run Website With -- uvicorn main:app --reload --host 0.0.0.0 --port 8000 --
