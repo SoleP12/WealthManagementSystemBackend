@@ -16,18 +16,17 @@ import uvicorn
 
 ##############################################
 # Model Imports
-from models import WealthManager
+from . import models
 
 ##############################################
 # Database Imports
-from .database import engine
+from .database import Base, engine
 
 ##############################################
 
+Base.metadata.create_all(bind=engine)
 
-models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 app.mount(
@@ -40,14 +39,14 @@ app.mount(
 templates = Jinja2Templates(directory =BASE_DIR /  "templates")
 
 
+
+###################### Endpoints ##############################################
 @app.get("/", name = "Login")
 async def default_page(request: Request):
     return templates.TemplateResponse(request, "login.html")
 
 
 
-
-
-@app.get("/dashboard/{}", response_class=HTMLResponse)
+@app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_page(request: Request):
     return templates.TemplateResponse(request, "dashboard.html")
