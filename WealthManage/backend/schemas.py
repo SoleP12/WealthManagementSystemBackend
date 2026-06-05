@@ -14,6 +14,12 @@ class WealthManagerResponse(WealthManagerBase):
     id: int
     name: str
     email: EmailStr
+    net_worth: int
 
     class Config:
         from_attributes = True
+
+class WealthManagerChange(WealthManagerBase):
+    name:str
+    email:EmailStr
+    net_worth:int
