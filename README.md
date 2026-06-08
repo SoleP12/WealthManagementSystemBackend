@@ -1,6 +1,6 @@
 # Wealth Management System Backend
-*Demonstrate Backend Software Engineering Skills Utilizing API's and Database.
-*Demonstarte 
+*Demonstrate Backend Software Engineering Skills and Principals Utilizing API's and Databases.
+* 
 
 
 * Change Directory Into the WealthManage Folder --cd WealthManage --
