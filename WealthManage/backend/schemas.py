@@ -23,3 +23,5 @@ class WealthManagerChange(WealthManagerBase):
     name:str
     email:EmailStr
     net_worth:int
+
+
