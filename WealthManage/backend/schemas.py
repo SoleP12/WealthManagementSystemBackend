@@ -8,13 +8,14 @@ class WealthManagerBase(BaseModel):
 class WealthManagerCreate(WealthManagerBase):
     name: str
     email: EmailStr
-    password: str
+    hashed_password: str
+    net_worth: float
 
 class WealthManagerResponse(WealthManagerBase):
     id: int
     name: str
     email: EmailStr
-    net_worth: int
+    net_worth: float
 
     class Config:
         from_attributes = True

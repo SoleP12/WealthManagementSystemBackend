@@ -44,18 +44,18 @@ app.mount(
 # Creation of Template object For FrontEnd of Service
 templates = Jinja2Templates(directory =BASE_DIR /  "templates")
 
-
 ############################################### Endpoints ##############################################
 
+
 ############################################### Login Page for Wealth Manager ##########################
-@app.get("/login/", name = "Login")
+@app.get("/", name = "Login", response_model = WealthManagerCreate)
 async def default_page(request: Request):
     return templates.TemplateResponse(request, "login.html")
 ########################################################################################################
 
 
 ######################################## DashBoard Page for Specific WealthManager #####################
-@app.get("/dashboard/{wealthmanager_id}", response_class=HTMLResponse)
+@app.get("login/dashboard/{wealthmanager_id}", response_model=WealthManagerResponse)
 async def dashboard_page(wealthmanager_id : int ,request: Request):
     return templates.TemplateResponse(request, "dashboard.html")
 ########################################################################################################
@@ -86,7 +86,7 @@ async def get_users(wealthmanager_id: int, db:Session = Depends(get_db)):
 
 
 ############################################### Deletion Endpoint ########################################
-@app.delete("/wealthmanager/{wealthmanager_id}" , response_model = WealthManagerBase)
+@app.delete("/wealthmanager/{wealthmanager_id}" , status_code = 204)
 async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_db)):
     db_user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not db_user:
@@ -94,18 +94,18 @@ async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_
 
     db.delete(db_user)
     db.commit()
-    return {f"Wealth Manager {wealthmanager_id} has been deleted"}
 ##########################################################################################################
 
 
 ############################################### Update WealthManager #####################################
-@app.put("/wealthmanager/{wealthmanager_id}", response_model = WealthManagerResponse)
+@app.patch("/wealthmanager/{wealthmanager_id}", response_model = WealthManagerResponse)
 async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:Session = Depends(get_db)):
     db_user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exists")
 
-    for field , value in wealthmanager.dict().items():
+    update_data = wealthmanager.dict(exclude_unset = True)
+    for field , value in update_data.items():
         setattr(db_user, field, value)
 
     db.commit()
@@ -114,13 +114,12 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
 ###########################################################################################################
 
 
-################################################ ShowCase Entire Database ##################################
+################################################ Showcase Entire Database ##################################
 @app.get("/allWealthManagers/", response_model = list[WealthManagerResponse])
 async def show_all_users(db:Session = Depends(get_db)):
     if Session:
         return db.query(WealthManager).all()
     else:
-        raise HTTPException(status_code = 404, detail = "No WealthManagers in Database")
-############################################################################################################
-
+        raise HTTPException(status_code = 404 , detail = "Database Creation Has Not Been Implemented")
+###########################################################################################################
 
