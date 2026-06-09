@@ -2,10 +2,14 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from config import SECRET_KEY
 
-
+import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jwt.exception import Invalid TokenError
 from pwdlib import PasswordHash
-
 from sqlalchemy.orm import Session
+from schemas import TokenData
+from models import WealthManager
 
 
 ALGORITHM = "HS256"
@@ -35,3 +39,5 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) ->st
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes = 15))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+

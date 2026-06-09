@@ -3,10 +3,12 @@
 # FastApi Creation Imports, Exception Imports
 from fastapi import FastAPI, Request, status, HTTPException, Depends
 from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-
+from datetime import timedelta
+from typing import Annotated
 ##############################################
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
@@ -17,18 +19,23 @@ import uvicorn
 
 ##############################################
 # Model Imports
-# from models import models
 from models import WealthManager
 
 ##############################################
 # Schema Import
 from schemas import WealthManagerResponse, WealthManagerCreate, WealthManagerBase, WealthManagerChange
+from schemas import Token
 
 ##############################################
 # Database Imports
 from database import Base, engine, get_db
 
 ##############################################
+# Auth Imports
+from auth import authenticate_user, create_access_token, get_current_active_user,get_password_hash, ACCESS_TOKEN_EXPIRE_MINUTES
+
+##############################################
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -123,3 +130,7 @@ async def show_all_users(db:Session = Depends(get_db)):
         raise HTTPException(status_code = 404 , detail = "Database Creation Has Not Been Implemented")
 ###########################################################################################################
 
+
+
+
+###########################################################################################################
