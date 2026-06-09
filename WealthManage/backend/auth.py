@@ -9,3 +9,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return password_hash.hash(password)
+
+def authenticate_user(db: Session, email: str, password:str):
+    user = db.query(WealthManager).filter(WealthManager.email == email).first()
+    if not user:
+        verify_password(password, fake_hash)
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
+
