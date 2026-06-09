@@ -9,6 +9,7 @@ from jwt.exception import Invalid TokenError
 from pwdlib import PasswordHash
 from sqlalchemy.orm import Session
 from schemas import TokenData
+from database import get_db 
 from models import WealthManager
 
 
