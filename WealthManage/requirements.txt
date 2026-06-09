@@ -3,3 +3,6 @@ sqlalchemy
 uvicorn
 Jinja2
 python-dotenv
+PYJWT
+pwdlib
+argon2-cffi
