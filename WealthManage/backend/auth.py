@@ -3,9 +3,7 @@ from typing import Annotated
 from config import SECRET_KEY
 
 
-
 from pwdlib import PasswordHash
-
 
 from sqlalchemy.orm import Session
 
@@ -31,3 +29,9 @@ def authenticate_user(db: Session, email: str, password:str):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None) ->str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes = 15))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
