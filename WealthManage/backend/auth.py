@@ -1,17 +1,32 @@
+##############################################
+# Standard Library Imports
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
-from config import SECRET_KEY
 
+##############################################
+# Third-Party Imports
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exception import Invalid TokenError
+from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from sqlalchemy.orm import Session
-from schemas import TokenData
-from database import get_db 
+
+##############################################
+# Configuration Imports
+from config import SECRET_KEY
+
+##############################################
+# Database Imports
+from database import get_db
+
+##############################################
+# Model Imports
 from models import WealthManager
 
+##############################################
+# Schema Imports
+from schemas import TokenData
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30

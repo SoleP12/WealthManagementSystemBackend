@@ -1,41 +1,37 @@
 # source venv/bin/activate
 ##############################################
-# FastApi Creation Imports, Exception Imports
-from fastapi import FastAPI, Request, status, HTTPException, Depends
-from fastapi.templating import Jinja2Templates
-from starlette.requests import Request
-from fastapi.responses import HTMLResponse
-from sqlalchemy.orm import Session
-from sqlalchemy import select
+# Standard Library Imports
 from datetime import timedelta
-from typing import Annotated
-##############################################
 from pathlib import Path
-from fastapi.staticfiles import StaticFiles
+from typing import Annotated
 
 ##############################################
-# Import To Run Server
+# Third-Party Imports
 import uvicorn
+from fastapi import FastAPI, Depends, HTTPException, Request, status
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 ##############################################
 # Model Imports
 from models import WealthManager
 
 ##############################################
-# Schema Import
-from schemas import WealthManagerResponse, WealthManagerCreate, WealthManagerBase, WealthManagerChange
-from schemas import Token
+# Schema Imports
+from schemas import Token, WealthManagerBase, WealthManagerChange, WealthManagerCreate, WealthManagerResponse
 
 ##############################################
 # Database Imports
 from database import Base, engine, get_db
 
 ##############################################
-# Auth Imports
-from auth import authenticate_user, create_access_token, get_current_active_user,get_password_hash, ACCESS_TOKEN_EXPIRE_MINUTES
+# Authentication Imports
+from auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_active_user, get_password_hash
 
 ##############################################
-
 
 Base.metadata.create_all(bind=engine)
 
