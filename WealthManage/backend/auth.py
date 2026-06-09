@@ -1,4 +1,17 @@
+from datetime import datetime, timedelta, timezone
+from typing import Annotated
+from config import SECRET_KEY
+
+
+
 from pwdlib import PasswordHash
+
+
+from sqlalchemy.orm import Session
+
+
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 password_hash = PasswordHash.recommended()
 fake_hash = password_hash.hash("fakehash")
@@ -18,4 +31,3 @@ def authenticate_user(db: Session, email: str, password:str):
     if not verify_password(password, user.hashed_password):
         return False
     return user
-
