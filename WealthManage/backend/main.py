@@ -52,7 +52,7 @@ templates = Jinja2Templates(directory =BASE_DIR /  "templates")
 
 
 ############################################### Login Page for Wealth Manager ##########################
-@app.get("/", name = "Login", response_model = WealthManagerCreate)
+@app.get("/", name = "WealthMLogin", response_model = WealthManagerCreate)
 async def default_page(request: Request):
     return templates.TemplateResponse(request, "login.html")
 ########################################################################################################
