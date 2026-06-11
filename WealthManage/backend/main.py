@@ -71,7 +71,9 @@ async def create_user(wealthmanager: WealthManagerCreate, db:Session = Depends(g
     if db.query(WealthManager).filter(WealthManager.email == wealthmanager.email).first():
         raise HTTPException(status_code = 404, detail = "WealthManager Already Exists")
 
-    wealth_manager = WealthManager(**wealthmanager.dict())
+    data = wealthmanager.dict()
+    data["hashed_password"] = get_password_hash(data["hashed_password"])
+    wealth_manager = WealthManager(**data)
     db.add(wealth_manager)
     db.commit()
     db.refresh(wealth_manager)
@@ -81,7 +83,7 @@ async def create_user(wealthmanager: WealthManagerCreate, db:Session = Depends(g
 
 ############################################### Get Specific WealthManager ##############################
 @app.get("/wealthmanager/{wealthmanager_id}", response_model = WealthManagerResponse)
-async def get_users(wealthmanager_id: int, db:Session = Depends(get_db)):
+async def get_users(wealthmanager_id: int, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
     user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     return user
     if not user:
@@ -91,7 +93,7 @@ async def get_users(wealthmanager_id: int, db:Session = Depends(get_db)):
 
 ############################################### Deletion Endpoint ########################################
 @app.delete("/wealthmanager/{wealthmanager_id}" , status_code = 204)
-async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_db)):
+async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
     db_user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exists")
