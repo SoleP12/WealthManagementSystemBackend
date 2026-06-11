@@ -51,6 +51,15 @@ templates = Jinja2Templates(directory =BASE_DIR /  "templates")
 ############################################### Endpoints ##############################################
 
 
+############################################# Reusable Dependency Types ################################
+CurrentUser = Annotated[WealthManager, Depends(get_current_active_user)]
+DbSession = Annotated[Session, Depends(get_db)]
+########################################################################################################
+
+
+
+
+
 ############################################### Login Page for Wealth Manager ##########################
 @app.get("/", name = "WealthMLogin", response_model = WealthManagerCreate)
 async def default_page(request: Request):
