@@ -133,7 +133,7 @@ async def show_all_users(db:Session = Depends(get_db)):
 ###########################################################################################################
 
 
-################################################### Token Endpoint #######################################
+################################################### Token Creation Endpoint #######################################
 @app.post("/token", response_model = Token)
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db:Session = Depends(get_db), ):
     user = authenticate_user(db, form_data.username, form_data.password)
