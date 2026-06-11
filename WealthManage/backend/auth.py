@@ -70,3 +70,8 @@ async def get_current_user(token : Annotated[str, Depends(oauth2_scheme)], db: S
     if user is None:
         raise credentials_exception
     return user
+
+async def get_current_active_user(curent_user: Annotated[WealthManager, Depends(get_current_user)]):
+    if getattr(current_user, "disabled", False):
+        raise HTTPException(status_code = 400, detail = "Inactive user")
+    return current_user
