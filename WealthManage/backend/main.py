@@ -84,6 +84,8 @@ async def create_user(wealthmanager: WealthManagerCreate, db:Session = Depends(g
 ############################################### Get Specific WealthManager ##############################
 @app.get("/wealthmanager/{wealthmanager_id}", response_model = WealthManagerResponse)
 async def get_users(wealthmanager_id: int, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
+    if current_user.id != wealthmanager_id:
+        raise HTTPException(status_code = 403, detail = "")
     user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not user:
         raise HTTPException(status_code=404, detail = "WealthManager ID not found")
@@ -94,6 +96,8 @@ async def get_users(wealthmanager_id: int, db:Session = Depends(get_db), current
 ############################################### Deletion Endpoint ########################################
 @app.delete("/wealthmanager/{wealthmanager_id}" , status_code = 204)
 async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
+    if current_user.id != wealthmanager_id:
+        raise HTTPException(status_code = 403, detail = "")
     db_user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exists")
@@ -106,6 +110,8 @@ async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_
 ############################################### Update WealthManager #####################################
 @app.patch("/wealthmanager/{wealthmanager_id}", response_model = WealthManagerResponse)
 async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
+    if current_user.id != wealthmanager_id:
+        raise HTTPException(status_code = 403, detail = "")
     db_user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exists")
