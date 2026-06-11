@@ -10,6 +10,7 @@ from typing import Annotated
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
@@ -125,8 +126,6 @@ async def show_all_users(db:Session = Depends(get_db)):
     else:
         raise HTTPException(status_code = 404 , detail = "Database Creation Has Not Been Implemented")
 ###########################################################################################################
-
-
 
 
 ################################################### Token Endpoint #######################################

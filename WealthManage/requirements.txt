@@ -6,3 +6,4 @@ python-dotenv
 PYJWT
 pwdlib
 argon2-cffi
+python-multipart

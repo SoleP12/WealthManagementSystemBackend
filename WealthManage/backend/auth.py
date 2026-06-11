@@ -12,6 +12,7 @@ from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from sqlalchemy.orm import Session
 
+
 ##############################################
 # Configuration Imports
 from config import SECRET_KEY
@@ -33,6 +34,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 password_hash = PasswordHash.recommended()
 fake_hash = password_hash.hash("fakehash")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -57,7 +60,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) ->st
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 async def get_current_user(token : Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db),):
-    credentials_execution = HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Could not validate credentials", headers = {"WWWW-Authenticate": "Bearer"})
+    credentials_exeception = HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Could not validate credentials", headers = {"WWWW-Authenticate": "Bearer"})
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithm=[ALGORITHM])
         username: str = payload.get("sub")
@@ -71,7 +74,7 @@ async def get_current_user(token : Annotated[str, Depends(oauth2_scheme)], db: S
         raise credentials_exception
     return user
 
-async def get_current_active_user(curent_user: Annotated[WealthManager, Depends(get_current_user)]):
+async def get_current_active_user(current_user: Annotated[WealthManager, Depends(get_current_user)]):
     if getattr(current_user, "disabled", False):
         raise HTTPException(status_code = 400, detail = "Inactive user")
     return current_user
