@@ -59,8 +59,8 @@ async def default_page(request: Request):
 
 
 ######################################## DashBoard Page for Specific WealthManager #####################
-@app.get("login/dashboard/{wealthmanager_id}", response_model=WealthManagerResponse)
-async def dashboard_page(wealthmanager_id : int ,request: Request):
+@app.get("/dashboard")
+async def dashboard_page(request: Request):
     return templates.TemplateResponse(request, "dashboard.html")
 ########################################################################################################
 

@@ -7,7 +7,7 @@ const email = document.getElementById("email").value;
 const password = document.getElementById("password").value;
 
 try {
-    const response = await fetch("http://localhost:8000/token", {
+    const response = await fetch("/token", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -32,6 +32,4 @@ try {
     console.error(error);
     alert("Unable to connect to server");
 }
-
-
 }
