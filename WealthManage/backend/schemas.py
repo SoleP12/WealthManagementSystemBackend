@@ -6,15 +6,15 @@ class WealthManagerBase(BaseModel):
     email: EmailStr
 
 class WealthManagerCreate(WealthManagerBase):
-    name: str
-    email: EmailStr
+    # name: str
+    # email: EmailStr
     hashed_password: str
     net_worth: float
 
 class WealthManagerResponse(WealthManagerBase):
     id: int
-    name: str
-    email: EmailStr
+    # name: str
+    # email: EmailStr
     net_worth: float
 
     class Config:
@@ -23,7 +23,7 @@ class WealthManagerResponse(WealthManagerBase):
 class WealthManagerChange(WealthManagerBase):
     name:str
     email:EmailStr
-    net_worth:int
+    net_worth:float
 
 class Token(BaseModel):
     access_token: str
