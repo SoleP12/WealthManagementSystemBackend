@@ -30,7 +30,7 @@ from database import Base, engine, get_db
 
 ##############################################
 # Authentication Imports
-from auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_active_user, get_password_hash
+from auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_active_user, get_password_hash, get_current_user
 
 ##############################################
 
@@ -61,7 +61,14 @@ async def default_page(request: Request):
 ######################################## DashBoard Page for Specific WealthManager #####################
 @app.get("/dashboard")
 async def dashboard_page(request: Request):
-    return templates.TemplateResponse(request, "dashboard.html")
+    return templates.TemplateResponse(request = request, name = "dashboard.html")
+########################################################################################################
+
+
+######################################## Protected API Endpoint ###################################
+@app.get("/wealthmanager/me")
+async def get_my_wealthmanager(current_user: WealthManager = Depends(get_current_active_user)):
+    return { "id": current_user.id, "email": current_user.email, "name": current_user.name}
 ########################################################################################################
 
 
@@ -128,7 +135,7 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
 
 ################################################ Showcase Entire Database ##################################
 @app.get("/allWealthManagers/", response_model = list[WealthManagerResponse])
-async def show_all_users(db:Session = Depends(get_db)):
+async def show_all_users(db:Session = Depends(get_db), current_user:WealthManager= Depends(get_current_active_user)):
         return db.query(WealthManager).all()
 ###########################################################################################################
 

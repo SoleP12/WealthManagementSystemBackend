@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, Float
 from database import Base
 
 
+
 class WealthManager(Base):
     __tablename__ = "items"
 
