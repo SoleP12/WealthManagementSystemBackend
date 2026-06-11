@@ -69,7 +69,7 @@ async def dashboard_page(wealthmanager_id : int ,request: Request):
 @app.post("/wealthmanager/", response_model = WealthManagerResponse)
 async def create_user(wealthmanager: WealthManagerCreate, db:Session = Depends(get_db)):
     if db.query(WealthManager).filter(WealthManager.email == wealthmanager.email).first():
-        raise HTTPException(status_code = 404, detail = "WealthManager Already Exists")
+        raise HTTPException(status_code = 409, detail = "WealthManager Already Exists")
 
     data = wealthmanager.dict()
     data["hashed_password"] = get_password_hash(data["hashed_password"])
@@ -85,9 +85,9 @@ async def create_user(wealthmanager: WealthManagerCreate, db:Session = Depends(g
 @app.get("/wealthmanager/{wealthmanager_id}", response_model = WealthManagerResponse)
 async def get_users(wealthmanager_id: int, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
     user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
-    return user
     if not user:
         raise HTTPException(status_code=404, detail = "WealthManager ID not found")
+    return user
 ##########################################################################################################
 
 
@@ -105,7 +105,7 @@ async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_
 
 ############################################### Update WealthManager #####################################
 @app.patch("/wealthmanager/{wealthmanager_id}", response_model = WealthManagerResponse)
-async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:Session = Depends(get_db)):
+async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
     db_user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exists")
@@ -123,10 +123,7 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
 ################################################ Showcase Entire Database ##################################
 @app.get("/allWealthManagers/", response_model = list[WealthManagerResponse])
 async def show_all_users(db:Session = Depends(get_db)):
-    if Session:
         return db.query(WealthManager).all()
-    else:
-        raise HTTPException(status_code = 404 , detail = "Database Creation Has Not Been Implemented")
 ###########################################################################################################
 
 
