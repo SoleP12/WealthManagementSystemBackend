@@ -128,7 +128,12 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exist")
 
+    existing_user = db.execute(select(WealthManager).where(WealthManager.username == wealthmanager.username, WealthManager.id != wealthmanager_id))
+    if existing_user.scalars().first():
+        raise HTTPException(status_code = 409, detail = "WealthManager already exists")
+
     update_data = wealthmanager.model_dump(exclude_unset = True)
+    
     for field , value in update_data.items():
         setattr(db_user, field, value)
 
