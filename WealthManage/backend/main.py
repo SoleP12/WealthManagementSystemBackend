@@ -59,9 +59,8 @@ DbSession = Annotated[Session, Depends(get_db)]
 
 
 
-
 ############################################### Login Page for Wealth Manager ##########################
-@app.get("/", name = "WealthMLogin", response_model = WealthManagerCreate)
+@app.get("/", name = "WealthMLogin")
 async def default_page(request: Request):
     return templates.TemplateResponse(request, "login.html")
 ########################################################################################################
@@ -75,20 +74,20 @@ async def dashboard_page(request: Request):
 
 
 ######################################## Protected API Endpoint ###################################
-@app.get("/wealthmanager/me")
-async def get_my_wealthmanager(current_user: WealthManager = Depends(get_current_active_user)):
-    return { "id": current_user.id, "email": current_user.email, "name": current_user.name}
+@app.get("/wealthmanager/me", response_model = WealthManagerResponse)
+async def get_my_wealthmanager(current_user: CurrentUser):
+    return current_user
 ########################################################################################################
 
 
 ############################################### WealthManager Creation #################################
-@app.post("/wealthmanager/", response_model = WealthManagerResponse)
-async def create_user(wealthmanager: WealthManagerCreate, db:Session = Depends(get_db)):
+@app.post("/wealthmanager/", response_model = WealthManagerResponse, status_code = 201)
+async def create_user(wealthmanager: WealthManagerCreate, db: DbSession):
     if db.query(WealthManager).filter(WealthManager.email == wealthmanager.email).first():
         raise HTTPException(status_code = 409, detail = "WealthManager Already Exists")
 
-    data = wealthmanager.dict()
-    data["hashed_password"] = get_password_hash(data["hashed_password"])
+    data = wealthmanager.model_dump()
+    data["hashed_password"] = get_password_hash(data.pop("password"))
     wealth_manager = WealthManager(**data)
     db.add(wealth_manager)
     db.commit()
@@ -111,13 +110,12 @@ async def get_users(wealthmanager_id: int, db:Session = Depends(get_db), current
 
 ############################################### Deletion Endpoint ########################################
 @app.delete("/wealthmanager/{wealthmanager_id}" , status_code = 204)
-async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
+async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_user: CurrentUser):
     if current_user.id != wealthmanager_id:
         raise HTTPException(status_code = 403, detail = "Unauthorized Action: Deletion of Account Unavailable")
     db_user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exist")
-
     db.delete(db_user)
     db.commit()
 ##########################################################################################################
@@ -125,14 +123,14 @@ async def delete_wealth_manager(wealthmanager_id: int, db:Session = Depends(get_
 
 ############################################### Update WealthManager #####################################
 @app.patch("/wealthmanager/{wealthmanager_id}", response_model = WealthManagerResponse)
-async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:Session = Depends(get_db), current_user: WealthManager = Depends(get_current_active_user)):
+async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:DbSession, current_user: CurrentUser):
     if current_user.id != wealthmanager_id:
-        raise HTTPException(status_code = 403, detail = "")
+        raise HTTPException(status_code = 403, detail = "Unauthorized Action: Cannot Update Another User's Account")
     db_user = db.query(WealthManager).filter(WealthManager.id == wealthmanager_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exist")
 
-    update_data = wealthmanager.dict(exclude_unset = True)
+    update_data = wealthmanager.model_dump(exclude_unset = True)
     for field , value in update_data.items():
         setattr(db_user, field, value)
 
@@ -144,14 +142,14 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
 
 ################################################ Showcase Entire Database ##################################
 @app.get("/allWealthManagers/", response_model = list[WealthManagerResponse])
-async def show_all_users(db:Session = Depends(get_db), current_user:WealthManager= Depends(get_current_active_user)):
+async def show_all_users(db:DbSession, current_user:CurrentUser):
         return db.query(WealthManager).all()
 ###########################################################################################################
 
 
 ################################################### Token Creation Endpoint #######################################
 @app.post("/token", response_model = Token)
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db:Session = Depends(get_db), ):
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db:DbSession ):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Incorrect username or password", headers = {"WWW-Authenticate": "Bearer"},)
