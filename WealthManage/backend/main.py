@@ -57,8 +57,6 @@ DbSession = Annotated[Session, Depends(get_db)]
 ########################################################################################################
 
 
-
-
 ############################################### Login Page for Wealth Manager ##########################
 @app.get("/", name = "WealthMLogin")
 async def default_page(request: Request):

@@ -1,9 +1,9 @@
 # API Models of what we send
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 class WealthManagerBase(BaseModel):
-    name: str
-    email: EmailStr
+    name: str = Field(min_length = 1, max_length = 20)
+    email: EmailStr = Field(min_length = 1, max_length = 40)
 
 class WealthManagerCreate(WealthManagerBase):
     # name: str
@@ -21,7 +21,7 @@ class WealthManagerResponse(WealthManagerBase):
         from_attributes = True
 
 class WealthManagerChange(WealthManagerBase):
-    name:str
+    name:str = Field(min_length = 1, max_length = 20)
     email:EmailStr
     net_worth:float
 
