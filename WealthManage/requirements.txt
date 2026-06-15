@@ -7,3 +7,6 @@ PYJWT
 pwdlib
 argon2-cffi
 python-multipart
+aiosql
+greenlet
+aiosqlite
