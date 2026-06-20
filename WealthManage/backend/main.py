@@ -4,7 +4,6 @@
 from datetime import timedelta
 from pathlib import Path
 from typing import Annotated
-
 ##############################################
 # Third-Party Imports
 import uvicorn
@@ -13,17 +12,18 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
 ##############################################
-# Model Imports
-from models import WealthManager
 
 ##############################################
+#Router Import
+from routers import users
+##############################################
 # Schema Imports
-from schemas import Token, WealthManagerBase, WealthManagerChange, WealthManagerCreate, WealthManagerResponse
-
+from schemas import Token
+##############################################
+from routers import users 
 ##############################################
 # Database Imports
 from database import Base, engine, get_db
@@ -39,13 +39,12 @@ from auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_t
 async def lifespan(_app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all) 
-
     yield
     await engine.dispose()
 
 app = FastAPI(lifespan = lifespan)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 app.mount(
     "/static",
     StaticFiles(directory=BASE_DIR / "static"),
@@ -56,11 +55,11 @@ app.mount(
 templates = Jinja2Templates(directory =BASE_DIR /  "templates")
 
 ############################################### Endpoints ##############################################
+app.include_router(users.router, prefix = "/WealthM/wealthmanager", tags=["WealthManagers"])
 
-
-############################################# Reusable Dependency Types ################################
-CurrentUser = Annotated[WealthManager, Depends(get_current_active_user)]
+############################################# Reusable Dependency Type ################################
 DbSession = Annotated[AsyncSession, Depends(get_db)]
+
 ########################################################################################################
 
 
@@ -69,98 +68,14 @@ DbSession = Annotated[AsyncSession, Depends(get_db)]
 async def default_page(request: Request):
     return templates.TemplateResponse(request, "login.html")
 ########################################################################################################
-
-
+@app.post("/register", name = "WealthMRegister")
+async def register_page(request: Request):
+    return templates.TemplateResponse(request, "register.html")
 ######################################## DashBoard Page for Specific WealthManager #####################
-@app.get("/dashboard")
-async def dashboard_page(request: Request):
+@app.get("/dashboard/{wealthmanager_id}")
+async def dashboard_page(wealthmanager_id: int, request: Request, current_user: WealthManager = Depends(get_current_active_user)):
     return templates.TemplateResponse(request = request, name = "dashboard.html")
 ########################################################################################################
-
-
-######################################## Protected API Endpoint ###################################
-@app.get("/wealthmanager/me", response_model = WealthManagerResponse)
-async def get_my_wealthmanager(current_user: CurrentUser):
-    return current_user
-########################################################################################################
-
-
-############################################### WealthManager Creation #################################
-@app.post("WealthM/wealthmanager/", response_model = WealthManagerResponse, status_code = 201)
-async def create_user(wealthmanager: WealthManagerCreate, db: DbSession):
-    result = await db.execute(select(WealthManager).where(WealthManager.email == wealthmanager.email))
-    if result.scalars().first():
-        raise HTTPException(status_code = 409, detail = "WealthManager Already Exists")
-
-    data = wealthmanager.model_dump()
-    data["hashed_password"] = get_password_hash(data.pop("password"))
-    wealth_manager = WealthManager(**data)
-    db.add(wealth_manager)
-    await db.commit()
-    await db.refresh(wealth_manager)
-    return wealth_manager
-#########################################################################################################
-
-
-############################################### Get Specific WealthManager ##############################
-@app.get("WealthM/wealthmanager/getme/{wealthmanager_id}", response_model = WealthManagerResponse)
-async def get_users(wealthmanager_id: int, db:DbSession , current_user: WealthManager = Depends(get_current_active_user)):
-    if current_user.id != wealthmanager_id:
-        raise HTTPException(status_code = 403, detail = "Unauthorized Action")
-    result = await db.execute(select(WealthManager).where(WealthManager.id == wealthmanager_id))
-    user = result.scalars().first()
-    if not user:
-        raise HTTPException(status_code=404, detail = "WealthManager ID not found")
-    return user
-##########################################################################################################
-
-
-############################################### Deletion Endpoint ########################################
-@app.delete("WealthM/wealthmanager/delete/{wealthmanager_id}" , status_code = 204)
-async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_user: CurrentUser):
-    if current_user.id != wealthmanager_id:
-        raise HTTPException(status_code = 403, detail = "Unauthorized Action: Deletion of Account Unavailable")
-    result = await db.execute(select(WealthManager).where(WealthManager.id == wealthmanager_id))
-    db_user = result.scalars().first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail = "WealthManager Does not Exist")
-    await db.delete(db_user)
-    await db.commit()
-##########################################################################################################
-
-
-############################################### Update WealthManager #####################################
-@app.patch("WealthM/wealthmanager/update/{wealthmanager_id}", response_model = WealthManagerResponse)
-async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:DbSession, current_user: CurrentUser):
-    if current_user.id != wealthmanager_id:
-        raise HTTPException(status_code = 403, detail = "Unauthorized Action: Cannot Update Another User's Account")
-    result = await db.execute(select(WealthManager).where(WealthManager.id == wealthmanager_id))
-    db_user = result.scalars().first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail = "WealthManager Does not Exist")
-
-    existing_user = await db.execute(select(WealthManager).where(WealthManager.email == wealthmanager.email, WealthManager.id != wealthmanager_id))
-    if existing_user.scalars().first():
-        raise HTTPException(status_code = 409, detail = "WealthManager already exists")
-
-    update_data = wealthmanager.model_dump(exclude_unset = True)
-    
-    for field , value in update_data.items():
-        setattr(db_user, field, value)
-
-    await db.commit()
-    await db.refresh(db_user)
-    return db_user
-###########################################################################################################
-
-
-################################################ Showcase Entire Database ##################################
-@app.get("WealthM/wealthmanager/", response_model = list[WealthManagerResponse])
-async def show_all_users(db:DbSession, current_user:CurrentUser):
-    result = await db.execute(select(WealthManager))
-    return result.scalars().all()
-###########################################################################################################
-
 
 ################################################### Token Creation Endpoint #######################################
 @app.post("/token", response_model = Token)
@@ -174,3 +89,4 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     )
     return Token(access_token = access_token, token_type = "bearer")
 ###########################################################################################################
+

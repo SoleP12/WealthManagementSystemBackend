@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/register.css">
+    <title>Create Account</title>
+
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Create Account</h2>
+
+    <form action="/register" method="post">
+        <input type="text" name="name" placeholder="Full Name" required>
+
+        <input type="email" name="email" placeholder="Email" required>
+
+        <input type="password" name="password" placeholder="Password" required>
+
+        <input type="number" step="0.01" name="net_worth" placeholder="Net Worth (optional)">
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div class="footer">
+        Already have an account?
+        <a href="/">Login</a>
+    </div>
+</div>
+
+</body>
+</html>

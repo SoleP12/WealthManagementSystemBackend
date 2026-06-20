@@ -6,17 +6,12 @@ class WealthManagerBase(BaseModel):
     email: EmailStr = Field(min_length = 1, max_length = 40)
 
 class WealthManagerCreate(WealthManagerBase):
-    # name: str
-    # email: EmailStr
-    password: str
+    password: str = Field(min_length = 8)
     net_worth: float
 
 class WealthManagerResponse(WealthManagerBase):
     id: int
-    # name: str
-    # email: EmailStr
     net_worth: float
-
     class Config:
         from_attributes = True
 
@@ -30,5 +25,5 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: str | None = None 
+    email: str | None = None 
 
