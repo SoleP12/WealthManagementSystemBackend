@@ -10,3 +10,4 @@ python-multipart
 aiosql
 greenlet
 aiosqlite
+aiosmtplib
