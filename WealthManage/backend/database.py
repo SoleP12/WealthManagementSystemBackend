@@ -2,14 +2,12 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker,create_async
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+from backend.config import settings
 
-# Create a SQLite database URL
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./sql_app.db"
-# For PostgreSQL you'd use: postgresql://user:password@postgresserver/db
 
 # Create the SQLAlchemy engine
 engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    settings.database_url
 )
 # The connect_args is needed only for SQLite. For other databases, it's not required.
 

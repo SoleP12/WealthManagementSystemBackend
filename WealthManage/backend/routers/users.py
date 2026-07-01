@@ -32,10 +32,28 @@ CurrentUser = Annotated[WealthManager, Depends(get_current_active_user)]
 DbSession = Annotated[AsyncSession, Depends(get_db)]
 ########################################################################################################
 
+
+############################################### WealthManager Creation #################################
+@router.post("/creation", response_model = WealthManagerResponse, status_code = 201)
+async def create_user(wealthmanager: WealthManagerCreate, db: DbSession):
+    result = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == wealthmanager.email.lower()))
+    if result.scalars().first():
+        raise HTTPException(status_code = 409, detail = "WealthManager Already Exists")
+
+    data = wealthmanager.model_dump()
+    data["hashed_password"] = get_password_hash(data.pop("password"))
+    wealth_manager = WealthManager(**data)
+    db.add(wealth_manager)
+    await db.commit()
+    await db.refresh(wealth_manager)
+    return wealth_manager
+#########################################################################################################
+
+
 ######################################## Protected API Endpoint To Return User Info ###################################
 @router.get("/me", response_model = WealthManagerResponse)
-async def get_my_wealthmanager(current_user: CurrentUser):
-    return {"id": current_user.id, "name": current_user.name, "email": current_user.email, "net_worth" : current_user.net_worth}
+async def get_my_wealthmanager(current_user: CurrentUser, db: DbSession):
+    return current_user
 ########################################################################################################
 
 
@@ -61,7 +79,7 @@ async def forgot_password(request_data: ForgotPasswordRequest, background_tasks:
 
 
 ######################################## Users Logged In Can Reset Password ############################
-@router.patch("/password", status_code = 200)
+@router.patch("/me/password", status_code = 200)
 async def change_password(password_data: ChangePasswordRequest, current_user:CurrentUser, db:DbSession):
     if not verify_password(password_data.current_password, current_user.hashed_password):
         raise HTTPException(status_code = 400, detail = "Current password is incorrect")
@@ -85,7 +103,7 @@ async def reset_password(request_data: ResetPasswordRequest, db: DbSession):
     if not reset_token:
         raise HTTPException(status_code = 400, detail = "Invalid or Expired Token")
     
-    if reset_token.expires_at.replace(tzinfo=UTC) < datetime.now(UTC):
+    if reset_token.expires_at  < datetime.now(UTC):
         await db.delete(reset_token)
         await db.commit()
         raise HTTPException(status_code = 400, detail = "Invalid or Expired Token")
@@ -103,23 +121,6 @@ async def reset_password(request_data: ResetPasswordRequest, db: DbSession):
     await db.commit()
     return{"message": "Password reset successfully. You can now login with your new password."}
 ########################################################################################################
-
-
-############################################### WealthManager Creation #################################
-@router.post("/creation", response_model = WealthManagerResponse, status_code = 201)
-async def create_user(wealthmanager: WealthManagerCreate, db: DbSession):
-    result = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == wealthmanager.email.lower()))
-    if result.scalars().first():
-        raise HTTPException(status_code = 409, detail = "WealthManager Already Exists")
-
-    data = wealthmanager.model_dump()
-    data["hashed_password"] = get_password_hash(data.pop("password"))
-    wealth_manager = WealthManager(**data)
-    db.add(wealth_manager)
-    await db.commit()
-    await db.refresh(wealth_manager)
-    return wealth_manager
-#########################################################################################################
 
 
 ############################################### Get Specific WealthManager ##############################

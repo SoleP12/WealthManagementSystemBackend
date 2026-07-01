@@ -26,7 +26,7 @@ from backend.schemas import Token
 from backend.routers import users 
 ##############################################
 # Database Imports
-from backend.database import Base, engine, get_db
+from backend.database import engine, get_db
 
 ##############################################
 # Authentication Imports
@@ -37,10 +37,9 @@ from backend.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_
 #Lifespan Function
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all) 
     yield
     await engine.dispose()
+
 
 app = FastAPI(lifespan = lifespan)
 
@@ -59,15 +58,19 @@ DbSession = Annotated[AsyncSession, Depends(get_db)]
 
 
 ############################################### Login Page for Wealth Manager ##########################
-@app.get("/", name = "WealthM")
+@app.get("/", name = "Wealth M Home")
 async def default_page(request: Request):
     return templates.TemplateResponse(request=request, name = "login.html")
 ########################################################################################################
-@app.post("/register", name = "WealthMRegister")
+
+################################################ Register Page for Wealth Manager ######################
+@app.post("/register", name = "Wealth M Register")
 async def register_page(request: Request):
     return templates.TemplateResponse(request = request, name="register.html")
+########################################################################################################
+
 ######################################## DashBoard Page for Specific WealthManager #####################
-@app.get("/dashboard")
+@app.get("/dashboard", name="Wealth M Dashboard Page")
 async def dashboard_page(request: Request):
     return templates.TemplateResponse(request = request, name = "dashboard.html")
 ########################################################################################################
@@ -80,7 +83,7 @@ async def forgot_password_page(request: Request):
 ########################################################################################################
 
 
-################################################### Reset Password ###################################################
+################################################### Reset Password Page ###################################################
 @app.get("/reset-password", include_in_schema = False)
 async def reset_password_page(request: Request):
     response = templates.TemplateResponse(request = request, name = "reset_password.html", context = {"request": request, "title": "Reset Password"})

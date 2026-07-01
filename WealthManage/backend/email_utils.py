@@ -42,7 +42,7 @@ async def send_password_reset_email(to_email:str, username: str, token:str) -> N
     reset_url = f"{settings.frontend_url}/reset-password?token={token}"
     template = jinja_env.get_template("email/password_reset.html")
     html_content = template.render(reset_url=reset_url, username=username)
-    plain_text = f"""Hi{username},
+    plain_text = f"""Hi {username},
 Your password Reset is Here. Click Below to Reset Password:
 {reset_url}
 This link will expire in 1 hour.

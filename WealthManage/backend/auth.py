@@ -13,6 +13,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 
@@ -31,6 +32,8 @@ from backend.models import WealthManager
 ##############################################
 # Schema Imports
 from backend.schemas import TokenData
+
+DbSession = Annotated[AsyncSession, Depends(get_db)]
 
 # ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -73,10 +76,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) ->st
     return jwt.encode(to_encode, settings.SECRET_KEY.get_secret_value(), algorithm=settings.algorithm)
 
 
-async def get_current_user(token : Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+async def get_current_user(token : Annotated[str, Depends(oauth2_scheme)], db: DbSession):
     credentials_exception = HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail = "Could not validate credentials", headers = {"WWW-Authenticate": "Bearer"})
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY.get_secret_value(), algorithm=[settings.algorithm])
+        payload = jwt.decode(token, settings.SECRET_KEY.get_secret_value(), algorithms=[settings.algorithm])
         email: str = payload.get("sub")
         print(payload)
         if email is None:

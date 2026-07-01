@@ -10,4 +10,6 @@ python-multipart
 aiosql
 greenlet
 aiosqlite
-aiosmtplib
+aiosmtplib 
+psycopg[binary]
+alembic
