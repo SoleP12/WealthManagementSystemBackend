@@ -8,23 +8,51 @@
 
 </head>
 
-<body>
+<body style="text-align: center;">
 
 <div class="container">
     <h2>Create Account</h2>
-
-    <form action="/register" method="post">
+    <form id = "register-form">
         <input type="text" name="name" placeholder="Full Name" required>
 
         <input type="email" name="email" placeholder="Email" required>
 
         <input type="password" name="password" placeholder="Password" required>
 
-        <input type="number" step="0.01" name="net_worth" placeholder="Net Worth (optional)">
+        <input type="number" step="1" name="net_worth" placeholder="Net Worth (optional)">
 
-        <button type="submit">Register</button>
+        <input type="number" step="1" name="total_assets" placeholder="Total Assets (optional)">
+
+        <input type="number" step="1" name="total_debt" placeholder="total_debt (optional)">
+
+        <input name="phone_number" placeholder="Phone Number">
+
+        <button href="login.html" type="submit" >Register</button>
     </form>
+    <script>
+document.getElementById("register-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
+    const form = e.target;
+
+    const response = await fetch("/api/users/creation", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: form.name.value,
+            email: form.email.value,
+            password: form.password.value,
+            net_worth: Number(form.net_worth.value) || 0,
+            total_assets: Number(form.total_assets.value) || 0,
+            total_debt: Number(form.total_debt.value) || 0
+        })
+    });
+
+    console.log(await response.json());
+});
+</script>
     <div class="footer">
         Already have an account?
         <a href="/">Login</a>

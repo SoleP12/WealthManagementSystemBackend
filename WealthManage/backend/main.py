@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import text
 ##############################################
 
 ##############################################
@@ -56,6 +57,39 @@ app.include_router(users.router, prefix = "/api/users", tags=["WealthManagers"])
 DbSession = Annotated[AsyncSession, Depends(get_db)]
 ########################################################################################################
 
+#################################################### App MiddleWare  ###################################
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+
+    response.headers["X-Content-Type-Options"] = "nosniff"
+
+    if "Referrer-Policy" not in response.headers:
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
+    if request.url.hostname not in ("localhost", "127.0.0.1"):
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=63072000; includeSubDomains"
+        )
+
+    return response
+########################################################################################################
+
+
+##################################### Database Health Endpoint #########################################
+@app.get("/health")
+async def health_check(db: DbSession):
+    try:
+        await db.execute(text("SELECT 1"))
+    except Exception as exc:
+        raise HTTPException(
+            status_code = 503, detail = "Database Unavailable",
+        ) from exc
+    return{"status": "healthy"}
+########################################################################################################
+
 
 ############################################### Login Page for Wealth Manager ##########################
 @app.get("/", name = "Wealth M Home")
@@ -64,7 +98,7 @@ async def default_page(request: Request):
 ########################################################################################################
 
 ################################################ Register Page for Wealth Manager ######################
-@app.post("/register", name = "Wealth M Register")
+@app.get("/register", name = "Wealth M Register")
 async def register_page(request: Request):
     return templates.TemplateResponse(request = request, name="register.html")
 ########################################################################################################

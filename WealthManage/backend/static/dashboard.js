@@ -19,10 +19,11 @@ async function loadDashboard() {
     }
 
     const user = await response.json();
+    
 
     document.querySelector(".card:nth-child(1) p").innerText = `$${user.net_worth}`;
-    document.querySelector(".card:nth-child(2) p").innerText = `$${user.investments}`;
-    document.querySelector(".card:nth-child(3) p").innerText = `$${user.cash_balance}`;
+    document.querySelector(".card:nth-child(3) p").innerText = `$${user.total_assets}`;
+    document.querySelector(".card:nth-child(2) p").innerText = `$${user.total_debt}`;
 }
 
 async function logout(event) {

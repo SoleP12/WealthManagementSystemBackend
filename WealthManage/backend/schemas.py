@@ -1,5 +1,5 @@
 # API Models of what we send
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 class WealthManagerBase(BaseModel):
     name: str = Field(min_length = 1, max_length = 20)
@@ -12,13 +12,18 @@ class WealthManagerCreate(WealthManagerBase):
 class WealthManagerResponse(WealthManagerBase):
     id: int
     net_worth: float
-    class Config:
-        from_attributes = True
+    total_assets: float
+    total_debt: float
+    # class Config:
+    #     from_attributes = True
+    model_config = ConfigDict(from_attributes = True)
 
 class WealthManagerChange(WealthManagerBase):
     name:str = Field(min_length = 1, max_length = 20)
     email:EmailStr
     net_worth:float
+    total_assets: float
+    total_debt: float
 
 class Token(BaseModel):
     access_token: str

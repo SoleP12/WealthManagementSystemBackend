@@ -84,7 +84,7 @@ async def change_password(password_data: ChangePasswordRequest, current_user:Cur
     if not verify_password(password_data.current_password, current_user.hashed_password):
         raise HTTPException(status_code = 400, detail = "Current password is incorrect")
     
-    current_user.hashed_password = hashed_password(password_data.new_password)
+    current_user.hashed_password = get_password_hash(password_data.new_password)
 
     await db.execute(sql_delete(PasswordResetToken).where(PasswordResetToken.user_id == current_user.id))
     await db.commit()
@@ -151,7 +151,7 @@ async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_us
 
 
 ############################################### Update WealthManager #####################################
-@router.patch("/update/{wealthmanager_id}", response_model = WealthManagerResponse)
+@router.patch("/update/{wealthmanager_id}", response_model = WealthManagerResponse, response_model_exclude_unset = True)
 async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:DbSession, current_user: CurrentUser):
     if current_user.id != wealthmanager_id:
         raise HTTPException(status_code = 403, detail = "Unauthorized Action: Cannot Update Another User's Account")
@@ -160,20 +160,22 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
     if not db_user:
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exist")
 
+    
     existing_user = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == wealthmanager.email.lower(), WealthManager.id != wealthmanager_id))
     if existing_user.scalars().first():
         raise HTTPException(status_code = 409, detail = "WealthManager already exists")
 
     update_data = wealthmanager.model_dump(exclude_unset = True)
     
+    
     for field , value in update_data.items():
-        setattr(db_user, field, value)
+        if getattr(db_user,field) != value:
+            setattr(db_user, field, value)
 
     await db.commit()
     await db.refresh(db_user)
     return db_user
 ###########################################################################################################
-
 
 ################################################ Showcase Entire Database ##################################
 @router.get("/showcase", response_model = list[WealthManagerResponse])

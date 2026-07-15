@@ -81,7 +81,7 @@ async def get_current_user(token : Annotated[str, Depends(oauth2_scheme)], db: D
     try:
         payload = jwt.decode(token, settings.SECRET_KEY.get_secret_value(), algorithms=[settings.algorithm])
         email: str = payload.get("sub")
-        print(payload)
+        # print(payload)
         if email is None:
             raise credentials_exception
         token_data = TokenData(email = email)

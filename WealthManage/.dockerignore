@@ -1,0 +1,9 @@
+.git/
+test/
+.env
+.venv
+env/
+*.env
+
+
+

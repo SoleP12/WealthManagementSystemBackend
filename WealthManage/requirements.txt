@@ -13,3 +13,4 @@ aiosqlite
 aiosmtplib 
 psycopg[binary]
 alembic
+pytest
