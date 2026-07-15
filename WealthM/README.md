@@ -1,5 +1,5 @@
 # Wealth Management System Backend
-*Demonstrate Backend Software Engineering Skills and Principals Utilizing API's and Databases.
+*The Purpose of this project is to demonstrate and improve upon backend software engineering skills for my current development
 * 
 
 
