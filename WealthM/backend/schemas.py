@@ -7,7 +7,10 @@ class WealthManagerBase(BaseModel):
 
 class WealthManagerCreate(WealthManagerBase):
     password: str = Field(min_length = 8)
-    net_worth: float
+    net_worth: float = 0
+    total_assets: float = 0
+    total_debt: float = 0
+
 
 class WealthManagerResponse(WealthManagerBase):
     id: int

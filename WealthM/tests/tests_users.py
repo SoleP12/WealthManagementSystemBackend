@@ -71,7 +71,7 @@ async def test_create_test_user_success(client: AsyncClient):
             "name" : "name",
             "email" : "name@gmail.com",
             "password" : "namepassword",
-            "net_worth" : 1300.00
+            "net_worth" : 1300.00,
             "total_assets": 10000,
             "total_debt": 840
         }
@@ -96,7 +96,7 @@ async def test_delete_user(client: AsyncClient):
             "name" : "name1",
             "email" : email,
             "password" : password,
-            "net_worth" : 1300.00
+            "net_worth" : 1300.00,
             "total_assets": 10000,
             "total_debt": 840
         }

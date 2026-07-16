@@ -94,7 +94,7 @@ async def create_test_user(
             "name": name,
             "email": email,
             "password": password,
-            "net_worth": net_worth
+            "net_worth": net_worth,
             "total_assets": total_assets,
             "total_debts": total_debts
 
