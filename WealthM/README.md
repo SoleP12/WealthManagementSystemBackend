@@ -89,6 +89,10 @@
     - Use Migration:
         - alembic upgrade head
 
-
+## *Database Shema(As of July 16th)
+        First Header  | Second Header
+        ------------- | -------------
+        Content Cell  | Content Cell
+        Content Cell  | Content Cell
 
 
