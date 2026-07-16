@@ -1,6 +1,6 @@
 # Wealth Management System Backend
 # Primary Purpose:
-    The objective of this Personal Project is to demonstrate modern backend Software Engineering principles and practices through a personal project. If there are any suggestions or faults that you see within the project please let me know I'm always oopen to learning and improving
+    -The objective of this Personal Project is to demonstrate modern backend Software Engineering principles and practices through a personal project. If there are any suggestions or faults that you see within the project please let me know I'm always oopen to learning and improving
 
 ## *Features:
     - Secure user registration and authentication using JWT
@@ -19,7 +19,7 @@
     - Environment variable configuration using Pydantic Settings
     - Security headers for improved application security
 
-### *Tech Stack
+## *Tech Stack:
     Backend
         - Python 3.14
         - FastAPI
@@ -45,7 +45,7 @@
         - Git
         - GitHub
 
-#### Configure Environment Variables
+## *Configure Environment Variables:
     .env file -- Configure These Environment varibales
         -Create ".env.py"
         -Add these variables to the python file
@@ -61,7 +61,7 @@
             - RESET_TOKEN_EXPIRE_MINUTES=15 
     *Do not space after pasting ensure ....=bjsbksjbfkjbfksjf not .... = jfskfjhksfhksf or ....= kfjkfsjfnskfksfn
 
-##### Running Locally
+## *Running Locally:
     * " git clone https://github.com/SoleP12/WealthManagementSystemBackend.git "
     * Change Directory to WealthManage Folder -- cd WealthM --
     * Create Virtual Enviroment Using python3 -m venv {NAME OF YOUR VIRTUAL ENVIRONMENT}
@@ -70,20 +70,20 @@
     * Change the Directory to the WealthM Folder using "cd WealthM"
     * Run Website With -- "uvicorn backend.main:app --reload" in WealthM folder
 
-###### Running Docker
+## *Running Docker:
     - Ensure Docker is running first on your machine
     - Build the image: -- " docker build wealth-m-api . " --
     - Run Container:  -- " docker run -p 8000:8000 --env-file wealth-m-api "
     - Stop Container -- " docker stop wealth-m-api "
 
-###### Testing
+## *Testing:
     - Run postgres first locally on your machine
     - Start -- " brew services start postgresql " if installed with HOMEBREW
     - " cd WealthM "
     - Run Tests with " pytest tests/tests_users.py -s " 
     - Stop -- " brew services stop postgresql " if installed with HOMEBREW
 
-###### Alembic Usage
+## *Alembic Usage:
     - Create a migration:
         - alembic revision --autogenerate -m "message"
     - Use Migration:
