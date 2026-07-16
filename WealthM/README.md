@@ -2,7 +2,7 @@
 #Heading 1 *Primary Purpose:
     The objective of this Personal Project is to demonstrate modern backend Software Engineering principles and practices.
 
-##Heading 2*Features:
+## *Features:
     -Secure user registration and authentication using JWT
     -Password hashing for secure credential storage
     -Password reset functionality via email
@@ -19,7 +19,7 @@
     -Environment variable configuration using Pydantic Settings
     -Security headers for improved application security
 
-###Headings 3*Tech Stack
+### *Tech Stack
 
 
 
