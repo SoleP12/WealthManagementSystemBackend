@@ -90,9 +90,9 @@
         - alembic upgrade head
 
 ## *Database Shema(As of July 16th)
-        First Header  | Second Header
-        ------------- | -------------
-        Content Cell  | Content Cell
-        Content Cell  | Content Cell
+id | email | hashed_pass | net_worth | name | phone_number | created_at | total_assets | total_debt | pass_reset_token 
+---|-------|-------------|-----------|------|--------------|------------|--------------|------------|-----------------
+   |       |             |           |      |              |            |              |            | 
+   |       |             |           |      |              |            |              |            |
 
 
