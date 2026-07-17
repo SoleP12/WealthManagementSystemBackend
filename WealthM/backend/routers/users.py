@@ -41,8 +41,14 @@ async def create_user(wealthmanager: WealthManagerCreate, db: DbSession):
         raise HTTPException(status_code = 409, detail = "WealthManager Already Exists")
 
     data = wealthmanager.model_dump()
+
+    data["net_worth"] = (
+        data["total_assets"] - data["total_debt"]
+    )
+
     data["hashed_password"] = get_password_hash(data.pop("password"))
     wealth_manager = WealthManager(**data)
+    
     db.add(wealth_manager)
     await db.commit()
     await db.refresh(wealth_manager)
@@ -171,6 +177,10 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
     for field , value in update_data.items():
         if getattr(db_user,field) != value:
             setattr(db_user, field, value)
+
+    db_user.net_worth = (
+        db_user.total_assets - db_user.total_debt
+    )
 
     await db.commit()
     await db.refresh(db_user)

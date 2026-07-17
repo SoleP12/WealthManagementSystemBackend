@@ -84,9 +84,8 @@ async def create_test_user(
     name: str = "testuser",
     email: str = "test@gmail.com",
     password: str = "testpassword123",
-    net_worth: float = 1300.00,
     total_assets: float = 1000,
-    total_debts: float = 300
+    total_debt: float = 300,
 ) -> dict:
     response = await client.post(
         "/api/users/creation",
@@ -94,9 +93,8 @@ async def create_test_user(
             "name": name,
             "email": email,
             "password": password,
-            "net_worth": net_worth,
             "total_assets": total_assets,
-            "total_debts": total_debts
+            "total_debt": total_debt
 
         },
     )

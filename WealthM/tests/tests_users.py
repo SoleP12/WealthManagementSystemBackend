@@ -38,11 +38,12 @@ async def test_create_user_duplicate_email(client: AsyncClient):
             "name": "testuser",
             "email": "test@gmail.com",
             "password": "testpassword123",
-            "net_worth": 1000.000,
+            # "net_worth": 1000.000,
             "total_assets": 10000,
             "total_debt": 840
         }
     )
+    
     assert response.status_code == 409
     assert response.json()["detail"] == "WealthManager Already Exists"
     print("Test_Create_User_Duplicate_Email Success")
@@ -71,7 +72,7 @@ async def test_create_test_user_success(client: AsyncClient):
             "name" : "name",
             "email" : "name@gmail.com",
             "password" : "namepassword",
-            "net_worth" : 1300.00,
+            # "net_worth" : 1300.00,
             "total_assets": 10000,
             "total_debt": 840
         }
@@ -96,7 +97,7 @@ async def test_delete_user(client: AsyncClient):
             "name" : "name1",
             "email" : email,
             "password" : password,
-            "net_worth" : 1300.00,
+            # "net_worth" : 1300.00,
             "total_assets": 10000,
             "total_debt": 840
         }
