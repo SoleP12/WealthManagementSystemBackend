@@ -44,9 +44,10 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
             name: form.name.value,
             email: form.email.value,
             password: form.password.value,
-            net_worth: Number(form.net_worth.value) || 0,
             total_assets: Number(form.total_assets.value) || 0,
-            total_debt: Number(form.total_debt.value) || 0
+            total_debt: Number(form.total_debt.value) || 0,
+            net_worth: Number(form.net_worth.value) || 0
+            
         })
     });
 
