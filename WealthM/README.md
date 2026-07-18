@@ -1,6 +1,6 @@
 # Wealth Management System Backend
 
-## Primary Purpose:
+## *Primary Purpose:
 The objective of this Personal Project is to demonstrate modern backend Software Engineering principles and practices through a personal project. If there are any suggestions or faults that you see within the project please let me know I'm always oopen to learning and improving
 
 ## *Features:
@@ -97,3 +97,11 @@ id | email | hashed_pass | net_worth | name | phone_number | created_at | total_
    |       |             |           |      |              |            |              |            |
 
 
+## *Features To Add Later:
+    - Uploads to S3
+    - Redis
+    - Background Tasks/ Celery
+    - Logging
+    - API Rate Limiting
+    - Environement COnfiguration
+    - Audit Logs
