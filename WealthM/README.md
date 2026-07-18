@@ -22,12 +22,12 @@ The objective of this Personal Project is to demonstrate modern backend Software
 ## *Tech Stack:
     Backend
         - Python 3.14
-        - FastAPI
+        - FastAPI 0.139.2
         - SQAlchemy 2.0
-        - PostgreSQL
-        - Alembic
+        - PostgreSQL 18.4
+        - Alembic 1.18.5
         - Pydantic v2
-        - Uvicorn
+        - Uvicorn 0.51.0
     
     Authentication & Safety
         - JWT Authentication
