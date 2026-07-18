@@ -1,5 +1,6 @@
 # Wealth Management System Backend
-# Primary Purpose:
+
+## Primary Purpose:
 The objective of this Personal Project is to demonstrate modern backend Software Engineering principles and practices through a personal project. If there are any suggestions or faults that you see within the project please let me know I'm always oopen to learning and improving
 
 ## *Features:
