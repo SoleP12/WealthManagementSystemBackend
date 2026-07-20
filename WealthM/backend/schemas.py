@@ -8,14 +8,13 @@ class WealthManagerBase(BaseModel):
 
 class WealthManagerCreate(WealthManagerBase):
     password: str = Field(min_length = 8)
-    # net_worth: float
     total_assets: float
     total_debt: float
+    phone_number: str
     
 
 class WealthManagerResponse(WealthManagerBase):
     id: int
-    # net_worth: float
     total_assets: float
     total_debt: float
     @computed_field
@@ -30,6 +29,7 @@ class WealthManagerChange(WealthManagerBase):
     email:EmailStr
     total_assets: float
     total_debt: float
+    phone_number: str
 
 
 class Token(BaseModel):

@@ -19,15 +19,15 @@
 
         <input type="password" name="password" placeholder="Password" required>
 
-        <input type="number" step="1" name="net_worth" placeholder="Net Worth (optional)">
+        <!-- <input type="number" step="1" name="net_worth" placeholder="Net Worth (optional)"> -->
 
-        <input type="number" step="1" name="total_assets" placeholder="Total Assets (optional)">
+        <input type="number" step="0.01" name="total_assets" placeholder="Total Assets">
 
-        <input type="number" step="1" name="total_debt" placeholder="total_debt (optional)">
+        <input type="number" step="0.01" name="total_debt" placeholder="Total Debt">
 
-        <input name="phone_number" placeholder="Phone Number">
+        <input type="tel" name="phone_number" placeholder="Phone Number">
 
-        <button href="login.html" type="submit" >Register</button>
+        <button onclick="location.href='/'" type="submit"> Register</button>
     </form>
     <script>
 document.getElementById("register-form").addEventListener("submit", async (e) => {
@@ -46,12 +46,14 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
             password: form.password.value,
             total_assets: Number(form.total_assets.value) || 0,
             total_debt: Number(form.total_debt.value) || 0,
-            net_worth: Number(form.net_worth.value) || 0
+            // net_worth: Number(form.net_worth.value) || 0
+            phone_number: form.phone_number.value || 0
             
         })
     });
 
     console.log(await response.json());
+    
 });
 </script>
     <div class="footer">
