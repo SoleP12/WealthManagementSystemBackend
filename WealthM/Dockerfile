@@ -1,6 +1,6 @@
 FROM python:3.14.6-slim-bookworm
 
-WORKDIR /WealthManagement/WealthManage
+WORKDIR /WealthManagement/WealthM
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 RUN useradd -m appuser
-RUN chown -R appuser:appuser /WealthManagement/WealthManage
+RUN chown -R appuser:appuser /WealthManagement/WealthM
 USER appuser
 
 ENV PORT=8080

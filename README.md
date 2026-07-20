@@ -73,16 +73,19 @@ The objective of this Personal Project is to demonstrate modern backend Software
 
 ## *Running Docker:
     - Ensure Docker is running first on your machine
-    - Build the image: -- " docker build wealth-m-api . " --
-    - Run Container:  -- " docker run -p 8000:8000 --env-file wealth-m-api "
-    - Stop Container -- " docker stop wealth-m-api "
+    - Build the image: -- " docker build -t wealth-m-api . " --
+    - Run Container:  -- " docker run -p 8080:8080 --env-file .env wealth-m-api "
+    - Access: Container will begin to run enter into broswer " http://localhost:8080 "
+    - Stop Container -- " docker stop "conatiner_name" "
+    - Remove Container -- " docker rm "conatainer_name" "
+    - Delete Image -- " docker rmi "image_name" "
 
 ## *Testing:
     - Run postgres first locally on your machine
-    - Start -- " brew services start postgresql " if installed with HOMEBREW
-    - " cd WealthM "
-    - Run Tests with " pytest tests/tests_users.py -s " 
-    - Stop -- " brew services stop postgresql " if installed with HOMEBREW
+    - Start -- " brew services start postgresql " in outside terminal if installed with HOMEBREW
+    - " cd WealthM " in IDE
+    - Run Tests with " pytest tests/tests_users.py -s " in IDE
+    - Stop -- " brew services stop postgresql " in outside terminal if installed with HOMEBREW
 
 ## *Alembic Usage:
     - Create a migration:

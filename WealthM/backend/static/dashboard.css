@@ -5,7 +5,7 @@
 }
 body{
     font-family: Arial, sans-serif;
-    background-color:#f4f7fb;
+    background-color: rgb(46, 223, 250);
     margin: 20px;
 }
 .navbar{
@@ -13,11 +13,11 @@ body{
     justify-content:space-between;
     align-items:center;
     padding:20px 40px;
-    background-color: rgb(46, 223, 250);
-    color:white;
+    background-color:#f4f7fb;
+    /* color:white; */
 }
 .nav-links a{
-    color:white;
+    color:black;
     text-decoration:none;
     margin-left:20px;
 }
