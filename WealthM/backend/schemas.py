@@ -10,7 +10,7 @@ class WealthManagerCreate(WealthManagerBase):
     password: str = Field(min_length = 8)
     total_assets: float
     total_debt: float
-    phone_number: str
+    phone_number: str = Field(max_length = 10)
     
 
 class WealthManagerResponse(WealthManagerBase):
@@ -29,7 +29,7 @@ class WealthManagerChange(WealthManagerBase):
     email:EmailStr
     total_assets: float
     total_debt: float
-    phone_number: str
+    phone_number: str = Field(max_length = 10)
 
 
 class Token(BaseModel):

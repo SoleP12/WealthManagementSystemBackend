@@ -8,7 +8,6 @@ from httpx import AsyncClient
 from tests.conftest import auth_header, create_test_user, login_user
 
 
-
 @pytest.mark.anyio
 async def test_empty_database(client: AsyncClient):
     response = await client.get("/api/users/showcase")
@@ -38,12 +37,11 @@ async def test_create_user_duplicate_email(client: AsyncClient):
             "name": "testuser",
             "email": "test@gmail.com",
             "password": "testpassword123",
-            # "net_worth": 1000.000,
             "total_assets": 10000,
-            "total_debt": 840
+            "total_debt": 840,
+            "phone_number" : "1234567891"
         }
     )
-    
     assert response.status_code == 409
     assert response.json()["detail"] == "WealthManager Already Exists"
     print("Test_Create_User_Duplicate_Email Success")
@@ -58,7 +56,8 @@ async def test_create_user_field_types_wrong(client: AsyncClient):
             "password" : 3,
             "net_worth" : "3.00",
             "total_assets": 10000,
-            "total_debt": 840
+            "total_debt": 840,
+            "phone_number" : "1234567891"
         }
     )
     assert response.status_code == 422
@@ -72,9 +71,9 @@ async def test_create_test_user_success(client: AsyncClient):
             "name" : "name",
             "email" : "name@gmail.com",
             "password" : "namepassword",
-            # "net_worth" : 1300.00,
             "total_assets": 10000,
-            "total_debt": 840
+            "total_debt": 840,
+            "phone_number" : "1234567891"
         }
     )
     assert response.status_code == 201
@@ -92,14 +91,15 @@ async def test_create_test_user_success(client: AsyncClient):
 async def test_delete_user(client: AsyncClient):
     email = "name1@gmail.com"
     password = "namepassword1"
+
     response = await client.post("/api/users/creation",
         json = {
             "name" : "name1",
             "email" : email,
             "password" : password,
-            # "net_worth" : 1300.00,
             "total_assets": 10000,
-            "total_debt": 840
+            "total_debt": 840,
+            "phone_number" : "1234567891"
         }
     )
     assert response.status_code == 201

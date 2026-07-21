@@ -14,3 +14,4 @@ aiosmtplib
 psycopg[binary]
 alembic
 pytest
+slowapi

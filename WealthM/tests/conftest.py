@@ -1,6 +1,8 @@
 import os
 from collections.abc import AsyncGenerator
 
+os.environ["TESTING"] = "True"
+
 os.environ["DATABASE_URL"] = (
     "postgresql+psycopg://wealthm:pass1@localhost/test_WealthM"
 )
@@ -86,6 +88,7 @@ async def create_test_user(
     password: str = "testpassword123",
     total_assets: float = 1000,
     total_debt: float = 300,
+    phone_number: str = "1234567891"
 ) -> dict:
     response = await client.post(
         "/api/users/creation",
@@ -94,8 +97,8 @@ async def create_test_user(
             "email": email,
             "password": password,
             "total_assets": total_assets,
-            "total_debt": total_debt
-
+            "total_debt": total_debt,
+            "phone_number": phone_number
         },
     )
     assert response.status_code == 201, f"Failed to create user: {response.text}"

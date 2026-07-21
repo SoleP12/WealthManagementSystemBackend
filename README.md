@@ -19,6 +19,7 @@ The objective of this Personal Project is to demonstrate modern backend Software
     - Automated API testing with Pytest
     - Environment variable configuration using Pydantic Settings
     - Security headers for improved application security
+    - API Rate Limiting for Fast-API through Slow-API
 
 ## *Tech Stack:
     Backend
@@ -35,6 +36,7 @@ The objective of this Personal Project is to demonstrate modern backend Software
         - Password Hashing
         - OAuth2 Password Flow
         - Security HTTp Headers
+        - Rate Limiting
 
     Testing
         - Pytest
@@ -70,6 +72,7 @@ The objective of this Personal Project is to demonstrate modern backend Software
     * PIP or Uvicorn intstall the requiremnets.txt with -- "pip install -r requirements.txt" -- or -- "uv add -r requirements.txt" --
     * Change the Directory to the WealthM Folder using "cd WealthM"
     * Run Website With -- "uvicorn backend.main:app --reload" in WealthM folder
+    * Go to " http://127.0.0.1:8000/docs " for API usage
 
 ## *Running Docker:
     - Ensure Docker is running first on your machine

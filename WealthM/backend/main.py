@@ -51,7 +51,7 @@ app.mount("/static",StaticFiles(directory=BASE_DIR / "static"),name="static"
 
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 ############################################### Endpoints ##############################################
-app.include_router(users.router, prefix = "/api/users", tags=["WealthManagers"])
+app.include_router(users.router, prefix = "/api/users", tags=["WealthManager Testing"])
 
 ############################################# Reusable Dependency Type ################################
 DbSession = Annotated[AsyncSession, Depends(get_db)]
@@ -110,7 +110,7 @@ async def dashboard_page(request: Request):
 ########################################################################################################
 
 
-################################################### Forgot Password Route###############################
+################################################### Forgot Password Route ###############################
 @app.get("/forgot-password", include_in_schema = False)
 async def forgot_password_page(request: Request):
     return templates.TemplateResponse(request = request, name = "forgot_password.html", context = {"request": request, "title": "Forgot Password"})

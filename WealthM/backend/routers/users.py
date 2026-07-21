@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
 from sqlalchemy import select, func
 from sqlalchemy import delete as sql_delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,10 +22,18 @@ from backend.database import Base, engine, get_db
 from backend.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_active_user, get_password_hash, get_current_user, generate_reset_token,hash_reset_token, verify_password
 
 ##############################################
-#Email Utils Import
+# Email Utils Import
 from backend.email_utils import send_password_reset_email
 ##############################################
+
+##############################################
+# Rate Limiting Import
+from limiter.limiter import limiter
+
+##############################################
+
 router = APIRouter()
+
 
 ############################################# Reusable Dependency Types ################################
 CurrentUser = Annotated[WealthManager, Depends(get_current_active_user)]
@@ -33,9 +41,24 @@ DbSession = Annotated[AsyncSession, Depends(get_db)]
 ########################################################################################################
 
 
+
+
+
+########################################## Limiter Tester Endpoint ######################################
+@router.get("/limit_test")
+@limiter.limit("2/minute")
+async def test_limiter(request: Request):
+    return {"Status": "Test_Lmiter"}
+########################################################################################################
+
+
+
+
+
 ############################################### WealthManager Creation #################################
 @router.post("/creation", response_model = WealthManagerResponse, status_code = 201)
-async def create_user(wealthmanager: WealthManagerCreate, db: DbSession):
+@limiter.limit("2/minute")
+async def create_user(wealthmanager: WealthManagerCreate, db: DbSession, request:Request):
     result = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == wealthmanager.email.lower()))
     if result.scalars().first():
         raise HTTPException(status_code = 409, detail = "WealthManager Already Exists")
@@ -56,16 +79,24 @@ async def create_user(wealthmanager: WealthManagerCreate, db: DbSession):
 #########################################################################################################
 
 
-######################################## Protected API Endpoint To Return User Info ###################################
+
+
+
+######################################## Protected API Endpoint To Return User Info #####################
 @router.get("/me", response_model = WealthManagerResponse)
-async def get_my_wealthmanager(current_user: CurrentUser, db: DbSession):
+@limiter.limit("5/minute")
+async def get_my_wealthmanager(current_user: CurrentUser, db: DbSession, request:Request):
     return current_user
 ########################################################################################################
 
 
+
+
+
 ######################################## Forgot Password Endpoint ######################################
 @router.post("/forgot-password", status_code = 202)
-async def forgot_password(request_data: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: DbSession):
+@limiter.limit("3/hour")
+async def forgot_password(request_data: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: DbSession, request: Request):
     result = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == request_data.email.lower()))
     user = result.scalars().first()
     if user:
@@ -84,9 +115,13 @@ async def forgot_password(request_data: ForgotPasswordRequest, background_tasks:
 ########################################################################################################
 
 
+
+
+
 ######################################## Users Logged In Can Reset Password ############################
 @router.patch("/me/password", status_code = 200)
-async def change_password(password_data: ChangePasswordRequest, current_user:CurrentUser, db:DbSession):
+@limiter.limit("1/hour")
+async def change_password(password_data: ChangePasswordRequest, current_user:CurrentUser, db:DbSession, request:Request):
     if not verify_password(password_data.current_password, current_user.hashed_password):
         raise HTTPException(status_code = 400, detail = "Current password is incorrect")
     
@@ -98,9 +133,13 @@ async def change_password(password_data: ChangePasswordRequest, current_user:Cur
 ########################################################################################################
 
 
+
+
+
 ######################################## Reset Password Endpoint #######################################
 @router.post("/reset-password", status_code = 200)
-async def reset_password(request_data: ResetPasswordRequest, db: DbSession):
+@limiter.limit("1/hour")
+async def reset_password(request_data: ResetPasswordRequest, db: DbSession, request:Request):
     token_hash = hash_reset_token(request_data.token)
 
     result = await db.execute(select(PasswordResetToken).where(PasswordResetToken.token_hash == token_hash))
@@ -129,9 +168,13 @@ async def reset_password(request_data: ResetPasswordRequest, db: DbSession):
 ########################################################################################################
 
 
+
+
+
 ############################################### Get Specific WealthManager ##############################
 @router.get("/getme/{wealthmanager_id}", response_model = WealthManagerResponse)
-async def get_users(wealthmanager_id: int, db:DbSession , current_user: WealthManager = Depends(get_current_active_user)):
+@limiter.limit("4/minute")
+async def get_users(wealthmanager_id: int, db:DbSession , current_user: CurrentUser, request:Request):
     if current_user.id != wealthmanager_id:
         raise HTTPException(status_code = 403, detail = "Unauthorized Action")
     result = await db.execute(select(WealthManager).where(WealthManager.id == wealthmanager_id))
@@ -142,9 +185,13 @@ async def get_users(wealthmanager_id: int, db:DbSession , current_user: WealthMa
 ##########################################################################################################
 
 
+
+
+
 ############################################### Deletion Endpoint ########################################
 @router.delete("/delete/{wealthmanager_id}" , status_code = 204)
-async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_user: CurrentUser):
+@limiter.limit("5/minute")
+async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_user: CurrentUser, request:Request):
     if current_user.id != wealthmanager_id:
         raise HTTPException(status_code = 403, detail = "Unauthorized Action: Deletion of Account Unavailable")
     result = await db.execute(select(WealthManager).where(WealthManager.id == wealthmanager_id))
@@ -156,9 +203,13 @@ async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_us
 ##########################################################################################################
 
 
+
+
+
 ############################################### Update WealthManager #####################################
 @router.patch("/update/{wealthmanager_id}", response_model = WealthManagerResponse, response_model_exclude_unset = True)
-async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManagerChange, db:DbSession, current_user: CurrentUser):
+@limiter.limit("5/minute")
+async def update_wealth_manager(wealthmanager_id: int ,wealthmanager:WealthManagerChange, db:DbSession, current_user: CurrentUser, request:Request):
     if current_user.id != wealthmanager_id:
         raise HTTPException(status_code = 403, detail = "Unauthorized Action: Cannot Update Another User's Account")
     result = await db.execute(select(WealthManager).where(WealthManager.id == wealthmanager_id))
@@ -167,7 +218,8 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
         raise HTTPException(status_code=404, detail = "WealthManager Does not Exist")
 
     
-    existing_user = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == wealthmanager.email.lower(), WealthManager.id != wealthmanager_id))
+    existing_user = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == wealthmanager.email.lower(), 
+                                                                 WealthManager.id != wealthmanager_id))
     if existing_user.scalars().first():
         raise HTTPException(status_code = 409, detail = "WealthManager already exists")
 
@@ -187,9 +239,14 @@ async def update_wealth_manager(wealthmanager_id: int,wealthmanager:WealthManage
     return db_user
 ###########################################################################################################
 
+
+
+
+
 ################################################ Showcase Entire Database ##################################
 @router.get("/showcase", response_model = list[WealthManagerResponse])
-async def show_all_users(db:DbSession): #current_user:CurrentUser
+@limiter.limit("5/minute")
+async def show_all_users(db:DbSession, request:Request): #current_user:CurrentUser
     result = await db.execute(select(WealthManager))
     return result.scalars().all()
 ###########################################################################################################
