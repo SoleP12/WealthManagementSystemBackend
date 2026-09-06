@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/static/index.css">
+
+    <title>Wealth M | Home Page</title>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navBar">
+        <a class="active" href="/">Home</a>
+        <a href="/login">Login</a>
+        <a href="/register">Open an Account</a>
+        <a href="#">About</a>
+    </nav>
+
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- WealthM Title -->
+        <section class="hero">
+
+            <h1 class="title">
+                Wealth M
+            </h1>
+
+            <p class="welcomeMessage">
+                Wealth In Mind Is Wealth For You
+            </p>
+
+            <div class="loginLink">
+                <a href="/login">
+                    <button type="button">
+                        Begin Your Journey With WealthM
+                    </button>
+                </a>
+            </div>
+
+        </section>
+
+
+        <!-- Images -->
+        <section class="imageContainer">
+
+            <a class="imageLink" href="https://storyset.com/business">
+                <img
+                    class="imgLeft"
+                    src="{{ url_for('static', path='images/Investment data-rafiki.png') }}"
+                    title="Business illustrations by Storyset"
+                    alt="Investment illustration"
+                >
+            </a>
+
+            <a class="imageLink" href="https://storyset.com/business">
+                <img
+                    class="imgRight"
+                    src="{{ url_for('static', path='images/Payment Information-rafiki.png') }}"
+                    title="Business illustrations by Storyset"
+                    alt="Payment information illustration"
+                >
+            </a>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
+

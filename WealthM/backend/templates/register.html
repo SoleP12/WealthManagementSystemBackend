@@ -19,8 +19,6 @@
 
         <input type="password" name="password" placeholder="Password" required>
 
-        <!-- <input type="number" step="1" name="net_worth" placeholder="Net Worth (optional)"> -->
-
         <input type="number" step="0.01" name="total_assets" placeholder="Total Assets">
 
         <input type="number" step="0.01" name="total_debt" placeholder="Total Debt">
@@ -46,7 +44,6 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
             password: form.password.value,
             total_assets: Number(form.total_assets.value) || 0,
             total_debt: Number(form.total_debt.value) || 0,
-            // net_worth: Number(form.net_worth.value) || 0
             phone_number: form.phone_number.value || 0
             
         })
@@ -58,7 +55,7 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
 </script>
     <div class="footer">
         Already have an account?
-        <a href="/">Login</a>
+        <a href="/login">Login</a>
     </div>
 </div>
 

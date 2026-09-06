@@ -91,8 +91,14 @@ async def health_check(db: DbSession):
 ########################################################################################################
 
 
-############################################### Login Page for Wealth Manager ##########################
+############################################### Home Page for Wealth Manager ##########################
 @app.get("/", name = "Wealth M Home")
+async def default_page(request: Request):
+    return templates.TemplateResponse(request=request, name ="index.html")
+########################################################################################################
+
+############################################### Login Page for Wealth Manager ##########################
+@app.get("/login", name = "Wealth M Login")
 async def default_page(request: Request):
     return templates.TemplateResponse(request=request, name = "login.html")
 ########################################################################################################
@@ -124,7 +130,6 @@ async def reset_password_page(request: Request):
     response.headers["Referrer-Policy"] = "no-referrer"
     return response
 ########################################################################################################
-
 
 
 ################################################### Token Creation Endpoint #######################################

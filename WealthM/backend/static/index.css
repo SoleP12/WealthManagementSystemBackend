@@ -1,0 +1,280 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+
+/* =========================
+   GENERAL
+   ========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Playfair Display", sans-serif;
+}
+
+body {
+    margin: 20px;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   NAVIGATION
+   ========================= */
+
+.navBar {
+    background-color: #333;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    width: 100%;
+}
+
+.navBar a {
+    color: #f2f2f2;
+    text-align: center;
+
+    padding: 14px 16px;
+
+    text-decoration: none;
+
+    font-size: clamp(14px, 2vw, 17px);
+}
+
+.navBar a:hover,
+.navBar a.active {
+    background-color: rgb(46, 223, 250);
+    color: white;
+}
+
+
+/* =========================
+   HERO SECTION
+   ========================= */
+
+.hero {
+    text-align: center;
+
+    /* Responsive spacing instead of margin-top: 150px */
+    padding-top: clamp(40px, 10vw, 150px);
+}
+
+
+/* Title */
+
+.title {
+    font-size: clamp(32px, 6vw, 60px);
+
+    text-align: center;
+
+    margin-bottom: 10px;
+}
+
+
+/* Welcome message */
+
+.welcomeMessage {
+    font-size: clamp(16px, 3vw, 24px);
+
+    text-align: center;
+
+    margin: 0 auto 25px;
+
+    max-width: 90%;
+}
+
+
+/* =========================
+   LOGIN BUTTON
+   ========================= */
+
+.loginLink {
+    text-align: center;
+}
+
+.loginLink a {
+    text-decoration: none;
+}
+
+.loginLink button {
+    font-family: inherit;
+
+    font-size: clamp(14px, 2vw, 18px);
+
+    padding: clamp(10px, 2vw, 15px)
+             clamp(16px, 4vw, 30px);
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: rgb(46, 223, 250);
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: transform 0.2s ease,
+                background-color 0.2s ease;
+}
+
+.loginLink button:hover {
+    transform: scale(1.05);
+
+    background-color: rgb(30, 190, 215);
+}
+
+
+/* =========================
+   IMAGE SECTION
+   ========================= */
+
+.imageContainer {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 30px;
+
+    width: 100%;
+
+    max-width: 1200px;
+
+    margin: clamp(30px, 6vw, 80px) auto 0;
+
+    padding: 0 20px;
+}
+
+
+/* Image links */
+
+.imageLink {
+    display: block;
+
+    width: 45%;
+
+    text-align: center;
+}
+
+
+/* Images */
+
+.imgLeft,
+.imgRight {
+
+    width: 100%;
+
+    max-width: 400px;
+
+    height: auto;
+
+    display: block;
+
+    margin: 0 auto;
+
+    animation: float 6s ease-in-out infinite;
+}
+
+
+/* =========================
+   FLOATING ANIMATION
+   ========================= */
+
+@keyframes float {
+
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-30px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 800px) {
+
+    .imageContainer {
+        gap: 15px;
+    }
+
+    .imageLink {
+        width: 48%;
+    }
+
+}
+
+
+/* =========================
+   PHONE
+   ========================= */
+
+@media (max-width: 600px) {
+
+    body {
+        margin: 10px;
+    }
+
+
+    /* Navigation becomes vertical */
+
+    .navBar {
+        flex-direction: column;
+    }
+
+    .navBar a {
+        width: 100%;
+
+        padding: 12px;
+    }
+
+
+    /* Hero */
+
+    .hero {
+        padding-top: 50px;
+    }
+
+
+    /* Images stack vertically */
+
+    .imageContainer {
+
+        flex-direction: column;
+
+        gap: 30px;
+
+        margin-top: 40px;
+
+        padding: 0 10px;
+    }
+
+
+    .imageLink {
+
+        width: 80%;
+
+        max-width: 300px;
+    }
+
+
+    .imgLeft,
+    .imgRight {
+
+        width: 100%;
+
+        max-width: 300px;
+    }
+}
+
