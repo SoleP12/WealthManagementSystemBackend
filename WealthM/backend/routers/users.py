@@ -6,6 +6,8 @@ from sqlalchemy import delete as sql_delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import timedelta, UTC, datetime
 from backend.config import settings
+from guard import SecurityDecorator, SecurityConfig
+from guard import SecurityMiddleware
 
 
 ##############################################
@@ -27,12 +29,24 @@ from backend.email_utils import send_password_reset_email
 ##############################################
 
 ##############################################
-# Rate Limiting Import
-from limiter.limiter import limiter
+
 
 ##############################################
-
 router = APIRouter()
+config = SecurityConfig(
+    rate_limit = 10,
+    enable_redis = False,
+
+    enable_penetration_detection = False,
+    rate_limit_window = 300, # 5 Minutes
+
+    excluded_detection_headers={"referer"},
+    custom_error_responses={429: "Rate limit exceeded. Please try again later."},
+)
+guard_deco = SecurityDecorator(config)
+
+# router.add_middleware(SecurityMiddleware, config=config)
+# router.state.guard_decorator = guard_deco
 
 
 ############################################# Reusable Dependency Types ################################
@@ -41,23 +55,18 @@ DbSession = Annotated[AsyncSession, Depends(get_db)]
 ########################################################################################################
 
 
-
-
-
 ########################################## Limiter Tester Endpoint ######################################
 @router.get("/limit_test")
-@limiter.limit("2/minute")
+@guard_deco.rate_limit(requests=6, window=300) # 6 requests per 5 minutes
 async def test_limiter(request: Request):
     return {"Status": "Test_Lmiter"}
 ########################################################################################################
 
 
-
-
-
 ############################################### WealthManager Creation #################################
 @router.post("/creation", response_model = WealthManagerResponse, status_code = 201)
-@limiter.limit("2/minute")
+@guard_deco.rate_limit(requests=6, window=300) # 6 requests per 5 minutes
+
 async def create_user(wealthmanager: WealthManagerCreate, db: DbSession, request:Request):
     result = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == wealthmanager.email.lower()))
     if result.scalars().first():
@@ -84,7 +93,7 @@ async def create_user(wealthmanager: WealthManagerCreate, db: DbSession, request
 
 ######################################## Protected API Endpoint To Return User Info #####################
 @router.get("/me", response_model = WealthManagerResponse)
-@limiter.limit("5/minute")
+@guard_deco.rate_limit(requests=5, window=300) #5 requests per 5 minutes
 async def get_my_wealthmanager(current_user: CurrentUser, db: DbSession, request:Request):
     return current_user
 ########################################################################################################
@@ -95,7 +104,7 @@ async def get_my_wealthmanager(current_user: CurrentUser, db: DbSession, request
 
 ######################################## Forgot Password Endpoint ######################################
 @router.post("/forgot-password", status_code = 202)
-@limiter.limit("3/hour")
+@guard_deco.rate_limit(requests=5, window=300) #5 requests per 5 minutes
 async def forgot_password(request_data: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: DbSession, request: Request):
     result = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == request_data.email.lower()))
     user = result.scalars().first()
@@ -120,7 +129,7 @@ async def forgot_password(request_data: ForgotPasswordRequest, background_tasks:
 
 ######################################## Users Logged In Can Reset Password ############################
 @router.patch("/me/password", status_code = 200)
-@limiter.limit("1/hour")
+@guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
 async def change_password(password_data: ChangePasswordRequest, current_user:CurrentUser, db:DbSession, request:Request):
     if not verify_password(password_data.current_password, current_user.hashed_password):
         raise HTTPException(status_code = 400, detail = "Current password is incorrect")
@@ -138,7 +147,7 @@ async def change_password(password_data: ChangePasswordRequest, current_user:Cur
 
 ######################################## Reset Password Endpoint #######################################
 @router.post("/reset-password", status_code = 200)
-@limiter.limit("1/hour")
+@guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
 async def reset_password(request_data: ResetPasswordRequest, db: DbSession, request:Request):
     token_hash = hash_reset_token(request_data.token)
 
@@ -173,7 +182,7 @@ async def reset_password(request_data: ResetPasswordRequest, db: DbSession, requ
 
 ############################################### Get Specific WealthManager ##############################
 @router.get("/getme/{wealthmanager_id}", response_model = WealthManagerResponse)
-@limiter.limit("4/minute")
+@guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
 async def get_users(wealthmanager_id: int, db:DbSession , current_user: CurrentUser, request:Request):
     if current_user.id != wealthmanager_id:
         raise HTTPException(status_code = 403, detail = "Unauthorized Action")
@@ -190,7 +199,7 @@ async def get_users(wealthmanager_id: int, db:DbSession , current_user: CurrentU
 
 ############################################### Deletion Endpoint ########################################
 @router.delete("/delete/{wealthmanager_id}" , status_code = 204)
-@limiter.limit("5/minute")
+@guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
 async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_user: CurrentUser, request:Request):
     if current_user.id != wealthmanager_id:
         raise HTTPException(status_code = 403, detail = "Unauthorized Action: Deletion of Account Unavailable")
@@ -208,7 +217,7 @@ async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_us
 
 ############################################### Update WealthManager #####################################
 @router.patch("/update/{wealthmanager_id}", response_model = WealthManagerResponse, response_model_exclude_unset = True)
-@limiter.limit("5/minute")
+@guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
 async def update_wealth_manager(wealthmanager_id: int ,wealthmanager:WealthManagerChange, db:DbSession, current_user: CurrentUser, request:Request):
     if current_user.id != wealthmanager_id:
         raise HTTPException(status_code = 403, detail = "Unauthorized Action: Cannot Update Another User's Account")
@@ -242,10 +251,9 @@ async def update_wealth_manager(wealthmanager_id: int ,wealthmanager:WealthManag
 
 
 
-
 ################################################ Showcase Entire Database ##################################
 @router.get("/showcase", response_model = list[WealthManagerResponse])
-@limiter.limit("5/minute")
+@guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
 async def show_all_users(db:DbSession, request:Request): #current_user:CurrentUser
     result = await db.execute(select(WealthManager))
     return result.scalars().all()
