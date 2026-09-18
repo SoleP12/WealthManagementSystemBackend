@@ -45,7 +45,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan = lifespan)
 
 config = SecurityConfig(
-    rate_limit = 10,
+    rate_limit = 30,
     enable_redis = False,
 
     enable_penetration_detection = False,
@@ -116,6 +116,7 @@ async def default_page(request: Request):
     return templates.TemplateResponse(request=request, name ="index.html")
 ########################################################################################################
 
+
 ############################################### Login Page for Wealth Manager ##########################
 @app.get("/login", name = "Wealth M Login")
 @guard_deco.rate_limit(requests=10, window = 300)
@@ -123,12 +124,14 @@ async def default_page(request: Request):
     return templates.TemplateResponse(request=request, name = "login.html")
 ########################################################################################################
 
+
 ################################################ Register Page for Wealth Manager ######################
 @app.get("/register", name = "Wealth M Register")
 @guard_deco.rate_limit(requests=10, window = 300) # 10 requests per 5 minutes
 async def register_page(request: Request):
     return templates.TemplateResponse(request = request, name="register.html")
 ########################################################################################################
+
 
 ######################################## DashBoard Page for Specific WealthManager #####################
 @app.get("/dashboard", name="Wealth M Dashboard Page")
@@ -169,4 +172,3 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     )
     return Token(access_token = access_token, token_type = "bearer")
 ###########################################################################################################
-

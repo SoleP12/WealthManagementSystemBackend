@@ -169,7 +169,7 @@ body {
 }
 
 .submit-btn:hover {
-    background: #fd0000;
+    background: #ffffff;
 
     transform: scale(1.05);
 }
@@ -204,7 +204,7 @@ body {
 }
 
 .create-btn:hover {
-    background: #00fd2a;
+    background: #ffffff;
 
     transform: scale(1.05);
 }

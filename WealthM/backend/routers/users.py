@@ -34,7 +34,7 @@ from backend.email_utils import send_password_reset_email
 ##############################################
 router = APIRouter()
 config = SecurityConfig(
-    rate_limit = 10,
+    rate_limit = 30,
     enable_redis = False,
 
     enable_penetration_detection = False,
@@ -47,7 +47,6 @@ guard_deco = SecurityDecorator(config)
 
 # router.add_middleware(SecurityMiddleware, config=config)
 # router.state.guard_decorator = guard_deco
-
 
 ############################################# Reusable Dependency Types ################################
 CurrentUser = Annotated[WealthManager, Depends(get_current_active_user)]
@@ -88,18 +87,12 @@ async def create_user(wealthmanager: WealthManagerCreate, db: DbSession, request
 #########################################################################################################
 
 
-
-
-
 ######################################## Protected API Endpoint To Return User Info #####################
 @router.get("/me", response_model = WealthManagerResponse)
 @guard_deco.rate_limit(requests=5, window=300) #5 requests per 5 minutes
 async def get_my_wealthmanager(current_user: CurrentUser, db: DbSession, request:Request):
     return current_user
 ########################################################################################################
-
-
-
 
 
 ######################################## Forgot Password Endpoint ######################################
@@ -124,9 +117,6 @@ async def forgot_password(request_data: ForgotPasswordRequest, background_tasks:
 ########################################################################################################
 
 
-
-
-
 ######################################## Users Logged In Can Reset Password ############################
 @router.patch("/me/password", status_code = 200)
 @guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
@@ -140,9 +130,6 @@ async def change_password(password_data: ChangePasswordRequest, current_user:Cur
     await db.commit()
     return {"message": "Password changed successfully"}
 ########################################################################################################
-
-
-
 
 
 ######################################## Reset Password Endpoint #######################################
@@ -177,9 +164,6 @@ async def reset_password(request_data: ResetPasswordRequest, db: DbSession, requ
 ########################################################################################################
 
 
-
-
-
 ############################################### Get Specific WealthManager ##############################
 @router.get("/getme/{wealthmanager_id}", response_model = WealthManagerResponse)
 @guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
@@ -192,9 +176,6 @@ async def get_users(wealthmanager_id: int, db:DbSession , current_user: CurrentU
         raise HTTPException(status_code=404, detail = "WealthManager ID not found")
     return user
 ##########################################################################################################
-
-
-
 
 
 ############################################### Deletion Endpoint ########################################
@@ -210,9 +191,6 @@ async def delete_wealth_manager(wealthmanager_id: int, db: DbSession, current_us
     await db.delete(db_user)
     await db.commit()
 ##########################################################################################################
-
-
-
 
 
 ############################################### Update WealthManager #####################################
@@ -247,8 +225,6 @@ async def update_wealth_manager(wealthmanager_id: int ,wealthmanager:WealthManag
     await db.refresh(db_user)
     return db_user
 ###########################################################################################################
-
-
 
 
 ################################################ Showcase Entire Database ##################################
