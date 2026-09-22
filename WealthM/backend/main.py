@@ -35,7 +35,6 @@ from backend.database import engine, get_db
 from backend.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_password_hash, get_current_user
 
 ##############################################
-
 #Lifespan Function
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -45,12 +44,11 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan = lifespan)
 
 config = SecurityConfig(
-    rate_limit = 30,
+    enable_rate_limiting = True,
+    rate_limit = 40,
     enable_redis = False,
-
     enable_penetration_detection = False,
     rate_limit_window = 300, # 5 Minutes
-
     excluded_detection_headers={"referer"},
     custom_error_responses={429: "Rate limit exceeded. Please try again later."},
 )
@@ -60,7 +58,6 @@ app.add_middleware(SecurityMiddleware, config=config)
 app.state.guard_decorator = guard_deco
 
 
-
 BASE_DIR = Path(__file__).resolve().parent
 
 app.mount("/static",StaticFiles(directory=BASE_DIR / "static"),name="static"
@@ -68,11 +65,12 @@ app.mount("/static",StaticFiles(directory=BASE_DIR / "static"),name="static"
 
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 ############################################### Endpoints ##############################################
-app.include_router(users.router, prefix = "/api/users", tags=["WealthManager Testing"])
+app.include_router(users.router, prefix = "/api/users", tags=["WealthManager"])
 
 ############################################# Reusable Dependency Type ################################
 DbSession = Annotated[AsyncSession, Depends(get_db)]
 ########################################################################################################
+
 
 #################################################### App MiddleWare  ###################################
 @app.middleware("http")
@@ -97,7 +95,7 @@ async def add_security_headers(request: Request, call_next):
 
 ##################################### Database Health Endpoint #########################################
 @app.get("/health")
-@guard_deco.rate_limit(requests=3, window = 300) # 3 requests per 5 minutes
+@guard_deco.rate_limit(requests=10, window = 300) # 3 requests per 5 minutes
 async def health_check(db: DbSession):
     try:
         await db.execute(text("SELECT 1"))
@@ -112,7 +110,7 @@ async def health_check(db: DbSession):
 ############################################### Home Page for Wealth Manager ##########################
 @app.get("/", name = "Wealth M Home")
 @guard_deco.rate_limit(requests=10, window = 300) # 10 requests per 5 minutes
-async def default_page(request: Request):
+async def home_page(request: Request):
     return templates.TemplateResponse(request=request, name ="index.html")
 ########################################################################################################
 
@@ -120,7 +118,7 @@ async def default_page(request: Request):
 ############################################### Login Page for Wealth Manager ##########################
 @app.get("/login", name = "Wealth M Login")
 @guard_deco.rate_limit(requests=10, window = 300)
-async def default_page(request: Request):
+async def login_page(request: Request):
     return templates.TemplateResponse(request=request, name = "login.html")
 ########################################################################################################
 

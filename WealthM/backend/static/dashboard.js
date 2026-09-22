@@ -29,7 +29,7 @@ async function loadDashboard() {
 async function logout(event) {
     event.preventDefault();
     localStorage.removeItem("access_token");
-    window.location.href = "/";
+    window.location.href = "/login";
 }
 
 document.addEventListener("DOMContentLoaded", () => {

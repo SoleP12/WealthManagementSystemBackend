@@ -6,8 +6,8 @@ from sqlalchemy import delete as sql_delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import timedelta, UTC, datetime
 from backend.config import settings
-from guard import SecurityDecorator, SecurityConfig
-from guard import SecurityMiddleware
+from guard import SecurityDecorator, SecurityConfig,SecurityMiddleware
+
 
 
 ##############################################
@@ -28,25 +28,25 @@ from backend.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_
 from backend.email_utils import send_password_reset_email
 ##############################################
 
+
 ##############################################
 
 
 ##############################################
 router = APIRouter()
 config = SecurityConfig(
-    rate_limit = 30,
+    rate_limit = 6,
     enable_redis = False,
-
     enable_penetration_detection = False,
     rate_limit_window = 300, # 5 Minutes
-
     excluded_detection_headers={"referer"},
     custom_error_responses={429: "Rate limit exceeded. Please try again later."},
 )
+
+config = SecurityConfig()
+
 guard_deco = SecurityDecorator(config)
 
-# router.add_middleware(SecurityMiddleware, config=config)
-# router.state.guard_decorator = guard_deco
 
 ############################################# Reusable Dependency Types ################################
 CurrentUser = Annotated[WealthManager, Depends(get_current_active_user)]
@@ -56,7 +56,7 @@ DbSession = Annotated[AsyncSession, Depends(get_db)]
 
 ########################################## Limiter Tester Endpoint ######################################
 @router.get("/limit_test")
-@guard_deco.rate_limit(requests=6, window=300) # 6 requests per 5 minutes
+@guard_deco.rate_limit(requests=3, window=300) # 2 requests per 5 minutes
 async def test_limiter(request: Request):
     return {"Status": "Test_Lmiter"}
 ########################################################################################################
@@ -65,7 +65,6 @@ async def test_limiter(request: Request):
 ############################################### WealthManager Creation #################################
 @router.post("/creation", response_model = WealthManagerResponse, status_code = 201)
 @guard_deco.rate_limit(requests=6, window=300) # 6 requests per 5 minutes
-
 async def create_user(wealthmanager: WealthManagerCreate, db: DbSession, request:Request):
     result = await db.execute(select(WealthManager).where(func.lower(WealthManager.email) == wealthmanager.email.lower()))
     if result.scalars().first():
@@ -89,7 +88,7 @@ async def create_user(wealthmanager: WealthManagerCreate, db: DbSession, request
 
 ######################################## Protected API Endpoint To Return User Info #####################
 @router.get("/me", response_model = WealthManagerResponse)
-@guard_deco.rate_limit(requests=5, window=300) #5 requests per 5 minutes
+@guard_deco.rate_limit(requests=6, window=300) #5 requests per 5 minutes
 async def get_my_wealthmanager(current_user: CurrentUser, db: DbSession, request:Request):
     return current_user
 ########################################################################################################
@@ -229,7 +228,7 @@ async def update_wealth_manager(wealthmanager_id: int ,wealthmanager:WealthManag
 
 ################################################ Showcase Entire Database ##################################
 @router.get("/showcase", response_model = list[WealthManagerResponse])
-@guard_deco.rate_limit(requests=5, window=300) # 5 requests per 5 minutes
+@guard_deco.rate_limit(requests=10, window=300) # 5 requests per 5 minutes
 async def show_all_users(db:DbSession, request:Request): #current_user:CurrentUser
     result = await db.execute(select(WealthManager))
     return result.scalars().all()
